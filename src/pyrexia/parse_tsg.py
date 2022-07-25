@@ -1,7 +1,9 @@
 import re
 from pathlib import Path
 from typing import Union
+
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 import pandas as pd
 
@@ -29,6 +31,9 @@ def find_header_sections(tsg_str: "list[str]"):
     for i, s in enumerate(tsg_str):
         if len(re_strip.findall(s)) > 0:
             positions.append(i)
+    # this final position if the end of file
+    # it is used to ensure that the final loop when pairing
+    # iterates over the last item
     positions.append(len(tsg_str))
     n_headers: int = len(positions)
     sections: "dict[str, tuple[int,int]]" = {}
@@ -41,17 +46,14 @@ def find_header_sections(tsg_str: "list[str]"):
     return sections
 
 
-def extract_section(fstr: str, header_sections: "dict[str, tuple[int]]") -> "list[int]":
-    return [1]
-
-
 def parse_tsg(
-    fstr: str, headers: "dict[str, str]"
+    fstr: str, headers: "dict[str, tuple[int, int]]"
 ) -> "dict[str, Union[str, pd.DataFrame]]":
     d_info = {}
     final_sample = []
     start: int
     end: int
+    tmp_sample: dict[str, str]
     for k in headers.keys():
         start = headers[k][0]
         end = headers[k][1]
@@ -89,6 +91,13 @@ def parse_tsg(
 
 
 def parse_kvp(line: str, split: str = "=") -> "Union[dict[str, str],None]":
+    """Parses key value pairs out of the .tsg file
+    control over the character used to define keys and values
+    toml files use = to define key and values like the below:
+    name = ben
+    .tsg files seem to use a mix of both = and :
+
+    """
     if line.find(split) >= 0:
         split_line = line.split(split)
         key = split_line[0].strip()
@@ -97,6 +106,18 @@ def parse_kvp(line: str, split: str = "=") -> "Union[dict[str, str],None]":
     else:
         kvp = None
     return kvp
+
+
+def calculate_wavelengths(
+    wavelength_specs: "dict[str,float]", coordinates: "dict[str, str]"
+) -> np.ndarray:
+    wavelength_range: float = wavelength_specs["end"] - wavelength_specs["start"]
+    resolution: float = wavelength_range / (int(coordinates["lastband"]) - 1)
+    wavelengths = np.arange(
+        wavelength_specs["start"], wavelength_specs["end"] + resolution, resolution
+    )
+
+    return wavelengths
 
 
 def read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> np.ndarray:
@@ -109,56 +130,30 @@ def read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> np.nd
     ra = np.reshape(tmp_array, (2, n_samples, n_bands))
     return ra
 
-def calculate_wavelengths(
-    wavelength_specs: "dict[str,float]", coordinates: "dict[str, str]"
-) -> np.ndarray:
-    wavelength_range: float = wavelength_specs["end"] - wavelength_specs["start"]
-    resolution: float = wavelength_range / (int(coordinates["lastband"]) - 1)
-
-    return np.arange(wavelength_specs["start"], wavelength_specs["end"]+resolution, resolution)
-
-def read_hires_dat(filename:Union[str, Path])->np.ndarray:
-    # the hires .dat file is f32 and the actual data starts at pos 640
-    lidar = np.fromfile(filename,dtype=np.float32,offset=640)
-    return lidar
-
-
-
-def parse_package(foldername:Union[str,Path]):
-    # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
-    if isinstance(foldername,str):
-        foldername = Path(foldername)
-    files = foldername.glob('*.*')    
-    # we are parsing the folder structure here and checking that 
-    # pairs of files exist in this case we are making sure
-    # that there are .tsg files with corresponding .bip files
-    # we will parse the lidar height data because we can
-    # _cras.bip files are still a mystery
-    for f in files:
-        f
-    # once we have paired the .tsg and .bip files run the reader
-    # for the nir/swir and then tir
-    # read nir/swir
-    filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg.tsg"
-    fstr = read_tsg_file(filename)
-    headers = find_header_sections(fstr)
-    t_info = parse_tsg(fstr, headers)
-    filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg_tir.bip"
-    tir = read_bip(filename, t_info["coordinates"])
-
-    # read tir
-    fstr = read_tsg_file(filename)
-    headers = find_header_sections(fstr)
-    n_info = parse_tsg(fstr, headers)
-
-    nir_wv = calculate_wavelengths(n_info["wavelength specs"],n_info["coordinates"])
-    tir_wv = calculate_wavelengths(t_info["wavelength specs"],t_info["coordinates"])
-
-foldername  = r'C:\Users\ben\pyrexia\data\ETG0187\ETG0187'
 filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg_tir.tsg"
+fstr = read_tsg_file(filename)
+headers = find_header_sections(fstr)
+
+find_header_sections(fstr[-3:])
+
+t_info = parse_tsg(fstr, headers)
+
+filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg_tir.bip"
+
+tir = read_bip(filename, t_info["coordinates"])
+
+filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg.tsg"
+fstr = read_tsg_file(filename)
+headers = find_header_sections(fstr)
+n_info = parse_tsg(fstr, headers)
+n_info["wavelength specs"]
+
+
+nir_wv = calculate_wavelengths(n_info["wavelength specs"], n_info["coordinates"])
+tir_wv = calculate_wavelengths(t_info["wavelength specs"], t_info["coordinates"])
 
 
 nir = read_bip(filename, n_info["coordinates"])
 plt.plot(nir_wv, nir[0, 1, :])
-plt.plot(tir_wv, tir[0, 1, :])
+plt.imshow(tir[1, :, :],extent=[0,1,0,1])
 plt.show()
