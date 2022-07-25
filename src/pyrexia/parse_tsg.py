@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Union
 import numpy as np
 from matplotlib import pyplot as plt
-
+import pandas as pd
 
 def read_tsg_file(filename: str) -> "list[str]":
     """Reads the files with the .tsg extension which are almost a toml file
@@ -109,24 +109,6 @@ def read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> np.nd
     ra = np.reshape(tmp_array, (2, n_samples, n_bands))
     return ra
 
-
-filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg_tir.tsg"
-fstr = read_tsg_file(filename)
-headers = find_header_sections(fstr)
-find_header_sections(fstr[-3:])
-t_info = parse_tsg(fstr, headers)
-t_info["wavelength specs"]
-t_info["coordinates"]
-filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg_tir.bip"
-tir = read_bip(filename, t_info["coordinates"])
-
-filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg.tsg"
-fstr = read_tsg_file(filename)
-headers = find_header_sections(fstr)
-n_info = parse_tsg(fstr, headers)
-n_info["wavelength specs"]
-
-
 def calculate_wavelengths(
     wavelength_specs: "dict[str,float]", coordinates: "dict[str, str]"
 ) -> np.ndarray:
@@ -135,8 +117,45 @@ def calculate_wavelengths(
 
     return np.arange(wavelength_specs["start"], wavelength_specs["end"]+resolution, resolution)
 
-nir_wv = calculate_wavelengths(n_info["wavelength specs"],n_info["coordinates"])
-tir_wv = calculate_wavelengths(t_info["wavelength specs"],t_info["coordinates"])
+def read_hires_dat(filename:Union[str, Path])->np.ndarray:
+    # the hires .dat file is f32 and the actual data starts at pos 640
+    lidar = np.fromfile(filename,dtype=np.float32,offset=640)
+    return lidar
+
+
+
+def parse_package(foldername:Union[str,Path]):
+    # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
+    if isinstance(foldername,str):
+        foldername = Path(foldername)
+    files = foldername.glob('*.*')    
+    # we are parsing the folder structure here and checking that 
+    # pairs of files exist in this case we are making sure
+    # that there are .tsg files with corresponding .bip files
+    # we will parse the lidar height data because we can
+    # _cras.bip files are still a mystery
+    for f in files:
+        f
+    # once we have paired the .tsg and .bip files run the reader
+    # for the nir/swir and then tir
+    # read nir/swir
+    filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg.tsg"
+    fstr = read_tsg_file(filename)
+    headers = find_header_sections(fstr)
+    t_info = parse_tsg(fstr, headers)
+    filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg_tir.bip"
+    tir = read_bip(filename, t_info["coordinates"])
+
+    # read tir
+    fstr = read_tsg_file(filename)
+    headers = find_header_sections(fstr)
+    n_info = parse_tsg(fstr, headers)
+
+    nir_wv = calculate_wavelengths(n_info["wavelength specs"],n_info["coordinates"])
+    tir_wv = calculate_wavelengths(t_info["wavelength specs"],t_info["coordinates"])
+
+foldername  = r'C:\Users\ben\pyrexia\data\ETG0187\ETG0187'
+filename = "/home/ben/pyrexia/data/jmdh001/JMDH001_tsg_tir.tsg"
 
 
 nir = read_bip(filename, n_info["coordinates"])
