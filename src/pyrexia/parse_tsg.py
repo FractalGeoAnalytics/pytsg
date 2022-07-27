@@ -54,6 +54,7 @@ class Spectra:
     bandheaders: "list[str]"
     sampleheaders: pd.DataFrame
 
+
 @dataclass
 class TSG:
     nir: Spectra
@@ -105,12 +106,34 @@ def extract_section(fstr: str, header_sections: "dict[str, tuple[int]]") -> "lis
 def parse_section(
     section_list: "list[str]", key_split: str = ":"
 ) -> "list[dict[str, str]]":
+    """
+    machine id = 0
+    ag.c3 = 0.000000
+    8:Width2
+    """
+    final: list[dict[str, str]] = []
+    kvp: dict[str, str]
+    for i in section_list:
+        kvp = parse_kvp(i, key_split)
+        final.append(kvp)
+
+    return final
+
+
+def parse_sample_header(
+    section_list: "list[str]", key_split: str = ":"
+) -> "list[dict[str, str]]":
+    """
+    '0:ETG0187_0001_1  T=0001 L=1 P=1 D=1.000005 X=4.000000 H=ETG0187'
+    '1:ETG0187_0001_2  T=0001 L=1 P=2 D=1.000006 X=12.000000 H=ETG0187'
+    '2:ETG0187_0001_3  T=0001 L=1 P=3 D=1.000006 X=20.000000 H=ETG0187'
+    """
     final: list[dict[str, str]] = []
     key_0: str
     tmp_sample: dict[str, str]
 
     for i in section_list:
-        kk = parse_kvp(i, ":")
+        kk = parse_kvp(i, key_split)
         k0 = list(kk.keys())
         key_0: str = k0[0]
         tmp_sample = {}
@@ -125,10 +148,10 @@ def parse_section(
 
 
 def parse_tsg(
-    fstr: list[str], headers: "dict[str, tuple[int,int]]"
+    fstr: "list[str]", headers: "dict[str, tuple[int,int]]"
 ) -> "dict[str, Any]":
     d_info: dict[str, Any] = {}
-    sample_header: list[dict[str, str]] = []
+    tmp_header: "list[dict[str, str]]" = []
     start: int
     end: int
 
@@ -136,8 +159,8 @@ def parse_tsg(
         start = headers[k][0]
         end = headers[k][1]
         if k == "sample headers":
-            sample_header = parse_section(fstr[start:end], ":")
-            d_info.update({k: pd.DataFrame(sample_header)})
+            tmp_header = parse_sample_header(fstr[start:end], ":")
+            d_info.update({k: pd.DataFrame(tmp_header)})
         elif k == "wavelength specs":
             split_wavelength = fstr[start:end][0].split()
             tmp_wave = {
@@ -145,11 +168,10 @@ def parse_tsg(
                 "end": float(split_wavelength[1]),
                 "unit": split_wavelength[-1],
             }
-
             d_info.update({k: tmp_wave})
         elif k == "band headers":
-            sample_header = parse_section(fstr[start:end], ":")
-            d_info.update({k: pd.DataFrame(sample_header)})
+            tmp_header = parse_section(fstr[start:end], ":")
+            d_info.update({k: tmp_header})
         else:
             tmp_out: dict[str, str] = {}
             for i in fstr[start:end]:
@@ -159,6 +181,9 @@ def parse_tsg(
             d_info.update({k: tmp_out})
 
     return d_info
+
+
+parse_sample_header(["0:Flags"])
 
 
 def parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
@@ -236,28 +261,6 @@ def read_hires_dat(filename: Union[str, Path]) -> NDArray:
     return lidar
 
 
-def parse_sample_headers(section: list[str]) -> pd.DataFrame:
-    """Parses the sample headers section of the .tsg file"""
-    tmp_sample: dict[str, str]
-    final_sample: list[dict[str, str]] = []
-    key_0: str
-    i: str
-    sample_header: pd.DataFrame
-    for i in section:
-        kk = parse_kvp(i, ":")
-        k0 = list(kk.keys())
-        key_0: str = k0[0]
-        tmp_sample = {}
-        tmp_sample.update({"sample": key_0})
-        for j in kk[key_0].split():
-            tmp_keys = parse_kvp(j)
-            if not tmp_keys is None:
-                tmp_sample.update(tmp_keys)
-        final_sample.append(tmp_sample)
-    sample_header = pd.DataFrame(final_sample)
-    return sample_header
-
-
 def parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
 
     split_wavelength: list[str] = line.split()
@@ -275,7 +278,9 @@ def parse_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectra
     info = parse_tsg(fstr, headers)
     spectra = read_bip(bip_file, info["coordinates"])
     wavelength = calculate_wavelengths(info["wavelength specs"], info["coordinates"])
-    package = Spectra(spectrum, spectra, wavelength,info['band headers'],info['sample headers'])
+    package = Spectra(
+        spectrum, spectra, wavelength, info["band headers"], info["sample headers"]
+    )
 
     return package
 
@@ -404,9 +409,8 @@ def parse_package(foldername: Union[str, Path]):
     # for the nir/swir and then tir
     # read nir/swir
     if file_pairs.valid_nir():
-        nir = parse_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip,'nir')
-        
+        nir = parse_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
+
     if file_pairs.valid_tir():
-        tir = parse_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip,'tir')
-    
-    
+        tir = parse_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
+    package = TSG(nir, tir)
