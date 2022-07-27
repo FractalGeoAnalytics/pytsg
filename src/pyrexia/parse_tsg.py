@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 import re
 from pathlib import Path
-from typing import Union, NamedTuple
+from typing import Union, NamedTuple, Any
 import numpy as np
 from numpy.typing import NDArray
 from matplotlib import pyplot as plt
@@ -45,7 +46,21 @@ class SectionInfo(NamedTuple):
     nlines: int  # number of image lines in this section
 
 
-def read_tsg_file(filename: str) -> "list[str]":
+@dataclass
+class Spectra:
+    spectrum_name: str
+    spectra: NDArray
+    wavelength: NDArray
+    bandheaders: "list[str]"
+    sampleheaders: pd.DataFrame
+
+@dataclass
+class TSG:
+    nir: Spectra
+    tir: Spectra
+
+
+def read_tsg_file(filename: Union[str, Path]) -> "list[str]":
     """Reads the files with the .tsg extension which are almost a toml file
     but not quite so the standard parser doesn't work
 
@@ -87,32 +102,43 @@ def extract_section(fstr: str, header_sections: "dict[str, tuple[int]]") -> "lis
     return [1]
 
 
-def parse_tsg(
-    fstr: str, headers: "dict[str, tuple[int,int]]"
-) -> "dict[str, Union[str, pd.DataFrame]]":
-    d_info = {}
-    final_sample = []
-    start: int
-    end: int
+def parse_section(
+    section_list: "list[str]", key_split: str = ":"
+) -> "list[dict[str, str]]":
+    final: list[dict[str, str]] = []
     key_0: str
     tmp_sample: dict[str, str]
+
+    for i in section_list:
+        kk = parse_kvp(i, ":")
+        k0 = list(kk.keys())
+        key_0: str = k0[0]
+        tmp_sample = {}
+        tmp_sample.update({"sample": key_0})
+        for j in kk[key_0].split():
+            tmp_keys = parse_kvp(j)
+            if not tmp_keys is None:
+                tmp_sample.update(tmp_keys)
+        final.append(tmp_sample)
+
+    return final
+
+
+def parse_tsg(
+    fstr: list[str], headers: "dict[str, tuple[int,int]]"
+) -> "dict[str, Any]":
+    d_info: dict[str, Any] = {}
+    sample_header: list[dict[str, str]] = []
+    start: int
+    end: int
+
     for k in headers.keys():
         start = headers[k][0]
         end = headers[k][1]
         if k == "sample headers":
-            for i in fstr[start:end]:
-                kk = parse_kvp(i, ":")
-                k0 = list(kk.keys())
-                key_0: str = k0[0]
-                tmp_sample = {}
-                tmp_sample.update({"sample": key_0})
-                for j in kk[key_0].split():
-                    tmp_keys = parse_kvp(j)
-                    if not tmp_keys is None:
-                        tmp_sample.update(tmp_keys)
-                final_sample.append(tmp_sample)
-            d_info.update({k: pd.DataFrame(final_sample)})
-        if k == "wavelength specs":
+            sample_header = parse_section(fstr[start:end], ":")
+            d_info.update({k: pd.DataFrame(sample_header)})
+        elif k == "wavelength specs":
             split_wavelength = fstr[start:end][0].split()
             tmp_wave = {
                 "start": float(split_wavelength[0]),
@@ -121,9 +147,11 @@ def parse_tsg(
             }
 
             d_info.update({k: tmp_wave})
-
+        elif k == "band headers":
+            sample_header = parse_section(fstr[start:end], ":")
+            d_info.update({k: pd.DataFrame(sample_header)})
         else:
-            tmp_out = {}
+            tmp_out: dict[str, str] = {}
             for i in fstr[start:end]:
                 tmp = parse_kvp(i)
                 if not tmp is None:
@@ -241,6 +269,17 @@ def parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
     return wavelength
 
 
+def parse_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectra:
+    fstr = read_tsg_file(tsg_file)
+    headers = find_header_sections(fstr)
+    info = parse_tsg(fstr, headers)
+    spectra = read_bip(bip_file, info["coordinates"])
+    wavelength = calculate_wavelengths(info["wavelength specs"], info["coordinates"])
+    package = Spectra(spectrum, spectra, wavelength,info['band headers'],info['sample headers'])
+
+    return package
+
+
 class FilePairs:
     """Class for keeping track of an item in inventory."""
 
@@ -251,7 +290,7 @@ class FilePairs:
     lidar: Path
     cras: Path
 
-    def get_nir(self) -> "Union[tuple[Path,Path], None]":
+    def _get_nir(self) -> "Union[tuple[Path,Path], None]":
         has_tsg: bool = isinstance(self.nir_tsg, Path)
         has_bip: bool = isinstance(self.nir_bip, Path)
         names_match: bool = self.nir_bip.stem == self.nir_tsg.stem
@@ -261,7 +300,7 @@ class FilePairs:
             pairs = None
         return pairs
 
-    def get_tir(self) -> "Union[tuple[Path,Path], None]":
+    def _get_tir(self) -> "Union[tuple[Path,Path], None]":
         has_tsg: bool = isinstance(self.nir_tsg, Path)
         has_bip: bool = isinstance(self.nir_bip, Path)
         names_match: bool = self.nir_bip.stem == self.nir_tsg.stem
@@ -271,7 +310,7 @@ class FilePairs:
             pairs = None
         return pairs
 
-    def get_lidar(self) -> Union[Path, None]:
+    def _get_lidar(self) -> Union[Path, None]:
         has_lidar: bool = isinstance(self.lidar, Path)
         if has_lidar:
             pairs = self.lidar
@@ -279,7 +318,7 @@ class FilePairs:
             pairs = None
         return pairs
 
-    def get_cras(self) -> Union[Path, None]:
+    def _get_cras(self) -> Union[Path, None]:
         has_cras: bool = isinstance(self.cras, Path)
         if has_cras:
             pairs = self.cras
@@ -288,7 +327,7 @@ class FilePairs:
         return pairs
 
     def valid_nir(self) -> bool:
-        result = self.get_nir()
+        result = self._get_nir()
         if result is None:
             valid = False
         else:
@@ -296,7 +335,7 @@ class FilePairs:
         return valid
 
     def valid_tir(self) -> bool:
-        result = self.get_tir()
+        result = self._get_tir()
         if result is None:
             valid = False
         else:
@@ -304,7 +343,7 @@ class FilePairs:
         return valid
 
     def valid_lidar(self) -> bool:
-        result = self.get_lidar()
+        result = self._get_lidar()
         if result is None:
             valid = False
         else:
@@ -312,7 +351,7 @@ class FilePairs:
         return valid
 
     def valid_cras(self) -> bool:
-        result = self.get_cras()
+        result = self._get_cras()
         if result is None:
             valid = False
         else:
@@ -320,9 +359,11 @@ class FilePairs:
         return valid
 
 
+foldername = "/home/ben/pyrexia/data/ETG0187"
+
+
 def parse_package(foldername: Union[str, Path]):
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
-    foldername = "/home/ben/pyrexia/data/ETG0187"
     if isinstance(foldername, str):
         foldername = Path(foldername)
     # we are parsing the folder structure here and checking that
@@ -359,25 +400,13 @@ def parse_package(foldername: Union[str, Path]):
         else:
             pass
 
+    # once we have paired the .tsg and .bip files run the reader
+    # for the nir/swir and then tir
+    # read nir/swir
     if file_pairs.valid_nir():
-        file_pairs.get_nir()
+        nir = parse_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip,'nir')
         
-        # once we have paired the .tsg and .bip files run the reader
-        # for the nir/swir and then tir
-        # read nir/swir
-        fstr = read_tsg_file(file_pairs.nir_tsg)
-        headers = find_header_sections(fstr)
-        t_info = parse_tsg(fstr, headers)
-         = read_bip(file_pairs.nir_bip, t_info["coordinates"])
-
-    # read tir
-    filename = "/home/ben/pyrexia/data/ETG0187/ETG0187_tsg.tsg"
-    fstr = read_tsg_file(filename)
-    headers = find_header_sections(fstr)
-    n_info = parse_tsg(fstr, headers)
-    filename = "/home/ben/pyrexia/data/ETG0187/ETG0187_tsg.bip"
-    nir = read_bip(filename, n_info["coordinates"])
-    n_info["coordinates"]
-
-    nir_wv = calculate_wavelengths(n_info["wavelength specs"], n_info["coordinates"])
-    tir_wv = calculate_wavelengths(t_info["wavelength specs"], t_info["coordinates"])
+    if file_pairs.valid_tir():
+        tir = parse_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip,'tir')
+    
+    
