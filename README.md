@@ -24,9 +24,16 @@ If using the top level importer the data is assumed to follow this structure
 ```
 
 ```python
-
+from matplotlib import pyplot as plt
 from pytsg import parse_tsg
 data = parse_tsg.read_package('/data/ETG0187')
+
+plt.plot(data.nir.wavelength, data.nir.spectra[0,0:10,:].T)
+plt.plot(data.tir.wavelength, data.tir.spectra[0,0:10,:].T)
+plt.xlabel('Wavelength nm')
+plt.ylabel('Reflectance')
+plt.title('pytsg reads tsg files')
+plt.show()
 
 ```
 
@@ -48,4 +55,4 @@ lidar = parse_tsg.read_cras('ETG0187_tsg_hires.dat')
 ```
 
 ## Thanks
-Thanks to CSIRO for all their assistance in decoding the file structure
+Thanks to CSIRO and in particular Andrew Rodger for their assistance in decoding the file structures.
