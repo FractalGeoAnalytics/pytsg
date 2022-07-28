@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any, NamedTuple, Union
 
 import numpy as np
-
 import pandas as pd
 from numpy.core._exceptions import _ArrayMemoryError
 from numpy.typing import NDArray
@@ -288,7 +287,6 @@ def _parse_section(
     return final
 
 
-
 def _parse_sample_header(
     section_list: "list[str]", key_split: str = ":"
 ) -> "list[dict[str, str]]":
@@ -352,7 +350,6 @@ def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
     return kvp
 
 
-
 def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDArray:
     """reads the .bip file as a 1d array then reshapes it according to the dimensions
     as supplied in the coordinates dict
@@ -366,7 +363,6 @@ def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDAr
         the third the bands
     Examples:
     """
-
 
 
 def _calculate_wavelengths(
@@ -411,7 +407,7 @@ def _parse_tsg(
             tmp_header = _parse_sample_header(fstr[start:end], ":")
             d_info.update({k: pd.DataFrame(tmp_header)})
         elif k == "wavelength specs":
-            tmp_wave = _parse_wavelength_specs(fstr[start:end])
+            tmp_wave = _parse_wavelength_specs(fstr[start:end][0])
             d_info.update({k: tmp_wave})
         elif k == "band headers":
             tmp_header = _parse_section(fstr[start:end], ":")
@@ -440,7 +436,7 @@ def _parse_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectr
     return package
 
 
-def read_package(foldername: Union[str, Path],read_cras:bool=False)->TSG:
+def read_package(foldername: Union[str, Path], read_cras: bool = False) -> TSG:
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
     if isinstance(foldername, str):
         foldername = Path(foldername)
@@ -455,7 +451,7 @@ def read_package(foldername: Union[str, Path],read_cras:bool=False)->TSG:
     # deal the files to the type
 
     file_pairs = FilePairs()
-    files = foldername.glob('*.*')
+    files = foldername.glob("*.*")
     f: Path
     for f in files:
         if f.name.endswith("tsg.tsg"):
@@ -481,9 +477,9 @@ def read_package(foldername: Union[str, Path],read_cras:bool=False)->TSG:
     # once we have paired the .tsg and .bip files run the reader
     # for the nir/swir and then tir
     # read nir/swir
-    nir:Spectra
-    tir:Spectra
-    lidar:Union[NDArray, None]
+    nir: Spectra
+    tir: Spectra
+    lidar: Union[NDArray, None]
     cras: Cras
 
     if file_pairs.valid_nir():
@@ -500,11 +496,13 @@ def read_package(foldername: Union[str, Path],read_cras:bool=False)->TSG:
     else:
         lidar = None
     if file_pairs.valid_cras() and read_cras:
-        cras  = _read_cras(file_pairs.cras)
+        cras = _read_cras(file_pairs.cras)
     else:
         cras = Cras
-    return TSG(nir, tir, lidar,cras)
 
-if __name__ == 'main':
+    return TSG(nir, tir, lidar, cras)
+
+
+if __name__ == "main":
     foldername = "data/ETG0187"
-    read_package(foldername)
+    results = read_package(foldername,read_cras=True)
