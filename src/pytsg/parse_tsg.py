@@ -4,7 +4,6 @@ import struct
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NamedTuple, Union
-from unittest import registerResult
 
 import numpy as np
 import pandas as pd
