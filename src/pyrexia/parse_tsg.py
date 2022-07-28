@@ -3,7 +3,7 @@ import re
 import struct
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, NamedTuple, Union, Tuple
+from typing import Any, NamedTuple, Union
 
 import numpy as np
 

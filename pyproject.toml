@@ -7,7 +7,9 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-numpy = "^1.23.1"
+numpy = "^1.23"
+pandas = "^1.4.3"
+Pillow = "^9.2.0"
 
 [tool.poetry.dev-dependencies]
 
