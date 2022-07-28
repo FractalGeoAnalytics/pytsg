@@ -1,0 +1,121 @@
+from datetime import datetime
+import struct
+from typing import NamedTuple,Union
+from pathlib import Path
+import numpy as np
+from PIL import Image
+import io
+from numpy.core._exceptions import _ArrayMemoryError
+
+class CrasHeader(NamedTuple):
+    """a docstring"""
+
+    id: str  # starts with "CoreLog Linescan ".   If it starts with "CoreLog Linescan 1." then it supports compression (otherwise ignore ctype).
+    ns: int  # image width in pixels
+    nl: int  # image height in lines
+    nb: int  # number of bands (1 or 3  but always 3 for HyLogger 1 / 2 / 3)
+    org: int  # interleave (1=BIL  2=BIP  and compressed rasters are always BIP while uncompressed ones are always BIL)
+    dtype: int  # datatype (unused  always byte)
+    specny: int  # number of linescan lines per dataset sample
+    specnx: int  # unused
+    specpx: int  # unused  intended to be the linescan column that relates to the across-scan position of the (1D) spectral dataset
+    ctype: int  # compression type (0=uncompressed  1=jpeg chunks)
+    chunksize: int  # number of image lines per chunk for jpeg-compressed rasters
+    nchunks: int  # number of compressed image chunks (jpeg compression)
+    csize32_obs: int  # size in bytes of comressed image data (OBSOLETE - not used anywhere any more.   However it will be set in old linescan rasters so I cant easily recycle it.   Also  there are some compressed rasters out there that are >4GB in size)
+    ntrays: int  # number of trays (number of tray-table records after the image data)
+    nsections: int  # number of sections (number of section-table records after the image data)
+    finerep: int  # chip-mode datasets - number of spectral measurements per chip bucket (and theres one image frame per bucket)
+    jpqual: int  # jpeg quality factor  0..100 (jpeg compression)
+
+
+class TrayInfo(NamedTuple):
+    utlengthmm: float  # "untrimmed" length of tray imagery in mm
+    baseheightmm: float  # height of bottom of tray above table
+    coreheightmm: float  # height of (top of) core above ..something or other (I don't actually use it for the linescan raster)
+    nsections: int  # number of core sections
+    nlines: int  # number of image lines in this tray
+
+
+class SectionInfo(NamedTuple):
+    utlengthmm: float  # untrimmed length of imagery in mm (could be less than the tray's)
+    startmm: float  # start position (along scan) in mm
+    endmm: float  # end position in mm
+    trimwidthmm: float  # active (section-overlap-corrected) image width in mm
+    startcol: int  # number of image lines in this tray
+    endcol: int  # end pixel across for active (section-overlap-corrected) imagery
+    nlines: int  # number of image lines in this section
+
+
+def read_cras(filename: Union[str, Path]):
+    section_info_format: str = "4f3i"
+    tray_info_format: str = "3f2i"
+    head_format: str = "20s2I8h4I2h"
+
+    with open(filename, "rb") as file:
+        # using memory mapping
+        
+        #file = mmap.mmap(fopen.fileno(), 0)
+        
+        # read the 64 byte header from the .cras file
+        bytes = file.read(64)
+        # create the header information
+        header = CrasHeader(*struct.unpack(head_format, bytes))
+
+        # Create the chunk_offset_array
+        # which determines which point of the file to enter to read the .jpg image
+
+        file.seek(64)
+        b = file.read(4 * (header.nchunks + 1))
+        chunk_offset_array = np.ndarray((header.nchunks + 1), np.uint32, b)
+        # we currently are reading the entire cras.bip file
+        # which can cause issues due to memory allocation  well handle that case
+        # with some error handling here where we quit while we are ahead
+        try:
+            cras = np.zeros((header.nl, header.ns, header.nb), dtype=np.uint8)
+            array_ok = True
+        except _ArrayMemoryError:
+            array_ok = False
+
+        # if the array fits into memory then proceed to decode the .jpgs
+        # using the chunk_offset_array to correctly index to the right location
+        # TODO: it might be worthwhile to modify this code to manage the case
+        # when you might like to have images saved if the file is too big to fit
+        # into ram
+
+        if array_ok:
+            curpos: int = 0
+            nr: int
+            for i in range(header.nchunks):
+                total_offset = chunk_offset_array[i] + 4 * (header.nchunks + 1) + 64
+                chunksize_in_bytes = chunk_offset_array[i + 1] - chunk_offset_array[i]
+                file.seek(total_offset)
+                chunk = file.read(chunksize_in_bytes)
+                img = Image.open(io.BytesIO(chunk))
+                # reverse the channels
+                # and flip the image upsidedown
+                np_image = np.flipud(np.flip(np.array(img), -1))
+                nr = np_image.shape[0]
+                cras[curpos : (curpos + nr), :, :] = np_image
+                curpos = curpos + nr
+
+        # the tray info section if it exists should start after the last image
+        # the section info and if there is a tray info section then it should be after the tray info section
+        info_table_start = (
+            64
+            + (header.nchunks + 1) * 4
+            + chunk_offset_array[header.nchunks]
+            - chunk_offset_array[0]
+        )
+        file.seek(info_table_start)
+
+        for i in range(header.ntrays):
+            bytes = file.read(20)
+            TrayInfo(*struct.unpack(tray_info_format, bytes))
+
+        for i in range(header.nsections):
+            bytes = file.read(28)
+            SectionInfo(*struct.unpack(section_info_format, bytes))
+
+    return cras, header
+read_cras('/home/ben/pyrexia/data/ETG0187/ETG0187_tsg_cras.bip')
