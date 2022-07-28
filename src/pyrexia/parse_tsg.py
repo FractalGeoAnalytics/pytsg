@@ -3,7 +3,7 @@ import re
 import struct
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, NamedTuple, Union,Tuple
+from typing import Any, NamedTuple, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -51,6 +51,13 @@ class SectionInfo(NamedTuple):
 
 
 @dataclass
+class Cras:
+    image: NDArray
+    tray: "list[TrayInfo]"
+    section: "list[SectionInfo]"
+
+
+@dataclass
 class Spectra:
     spectrum_name: str
     spectra: NDArray
@@ -63,6 +70,8 @@ class Spectra:
 class TSG:
     nir: Spectra
     tir: Spectra
+    cras: Cras
+    lidar: NDArray
 
 
 class FilePairs:
@@ -143,16 +152,17 @@ class FilePairs:
             valid = True
         return valid
 
-def _read_cras(filename: Union[str, Path])->Tuple[NDArray[np.uint8],CrasHeader]:
+
+def _read_cras(filename: Union[str, Path]) -> Cras:
     section_info_format: str = "4f3i"
     tray_info_format: str = "3f2i"
     head_format: str = "20s2I8h4I2h"
 
     with open(filename, "rb") as file:
         # using memory mapping
-        
-        #file = mmap.mmap(fopen.fileno(), 0)
-        
+
+        # file = mmap.mmap(fopen.fileno(), 0)
+
         # read the 64 byte header from the .cras file
         bytes = file.read(64)
         # create the header information
@@ -205,15 +215,19 @@ def _read_cras(filename: Union[str, Path])->Tuple[NDArray[np.uint8],CrasHeader]:
         )
         file.seek(info_table_start)
 
+        tray: list[TrayInfo] = []
         for i in range(header.ntrays):
             bytes = file.read(20)
-            TrayInfo(*struct.unpack(tray_info_format, bytes))
+            tray.append(TrayInfo(*struct.unpack(tray_info_format, bytes)))
 
+        section: list[SectionInfo] = []
         for i in range(header.nsections):
             bytes = file.read(28)
-            SectionInfo(*struct.unpack(section_info_format, bytes))
+            section.append(SectionInfo(*struct.unpack(section_info_format, bytes)))
 
-    return cras, header
+    output = Cras(cras, tray, section)
+    return output
+
 
 def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
     """Reads the files with the .tsg extension which are almost a toml file
@@ -295,6 +309,7 @@ def _parse_sample_header(
         final.append(tmp_sample)
 
     return final
+
 
 def _parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
 
@@ -426,9 +441,6 @@ def _parse_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectr
     return package
 
 
-foldername = "/home/ben/pyrexia/data/ETG0187"
-
-
 def parse_package(foldername: Union[str, Path]):
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
     if isinstance(foldername, str):
@@ -443,9 +455,9 @@ def parse_package(foldername: Union[str, Path]):
     #
     # deal the files to the type
 
-    files = foldername.glob("*.*")
-    f: Path
     file_pairs = FilePairs()
+    files = foldername.glob('*.*')
+    f: Path
     for f in files:
         if f.name.endswith("tsg.tsg"):
             setattr(file_pairs, "nir_tsg", f)
@@ -472,14 +484,16 @@ def parse_package(foldername: Union[str, Path]):
     # read nir/swir
     if file_pairs.valid_nir():
         nir = _parse_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
-
+    dir(file_pairs)
     if file_pairs.valid_tir():
         tir = _parse_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
-    
+
     if file_pairs.valid_lidar():
-        _read_hires_dat(file_pairs.lidar)
+        lidar = _read_hires_dat(file_pairs.lidar)
 
     if file_pairs.valid_cras():
-        _read_cras(file_pairs.cras)
+        cras, _ = _read_cras(file_pairs.cras)
 
-    package = TSG(nir, tir)
+if __name__ == 'main':
+    foldername = "data/ETG0187"
+    parse_package(foldername)
