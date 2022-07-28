@@ -71,7 +71,7 @@ class TSG:
     nir: Spectra
     tir: Spectra
     cras: Cras
-    lidar: NDArray
+    lidar: Union[NDArray,None]
 
 
 class FilePairs:
@@ -153,7 +153,7 @@ class FilePairs:
         return valid
 
 
-def _read_cras(filename: Union[str, Path]) -> Cras:
+def read_cras(filename: Union[str, Path]) -> Cras:
     section_info_format: str = "4f3i"
     tray_info_format: str = "3f2i"
     head_format: str = "20s2I8h4I2h"
@@ -376,7 +376,7 @@ def _calculate_wavelengths(
     )
 
 
-def _read_hires_dat(filename: Union[str, Path]) -> NDArray:
+def read_hires_dat(filename: Union[str, Path]) -> NDArray:
     """read the *hires.dat file which contains the lidar scan
     of the material
 
@@ -423,7 +423,7 @@ def _parse_tsg(
     return d_info
 
 
-def _parse_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectra:
+def read_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectra:
     fstr = _read_tsg_file(tsg_file)
     headers = _find_header_sections(fstr)
     info = _parse_tsg(fstr, headers)
@@ -436,7 +436,7 @@ def _parse_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectr
     return package
 
 
-def read_package(foldername: Union[str, Path], read_cras: bool = False) -> TSG:
+def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> TSG:
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
     if isinstance(foldername, str):
         foldername = Path(foldername)
@@ -483,20 +483,20 @@ def read_package(foldername: Union[str, Path], read_cras: bool = False) -> TSG:
     cras: Cras
 
     if file_pairs.valid_nir():
-        nir = _parse_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
+        nir = read_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
     else:
         nir = Spectra
 
     if file_pairs.valid_tir():
-        tir = _parse_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
+        tir = read_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
     else:
         tir = Spectra
     if file_pairs.valid_lidar():
-        lidar = _read_hires_dat(file_pairs.lidar)
+        lidar = read_hires_dat(file_pairs.lidar)
     else:
         lidar = None
-    if file_pairs.valid_cras() and read_cras:
-        cras = _read_cras(file_pairs.cras)
+    if file_pairs.valid_cras() and read_cras_file:
+        cras = read_cras(file_pairs.cras)
     else:
         cras = Cras
 
@@ -504,7 +504,7 @@ def read_package(foldername: Union[str, Path], read_cras: bool = False) -> TSG:
 
 
 if __name__ == "main":
-    foldername = "data/ETG0187"
-    results = read_package(foldername,read_cras=True)
+    foldername = "data/RC_hyperspectral_geochem"
+    results = read_package(foldername,read_cras=False)
     pd.DataFrame(results.cras.section)
     
