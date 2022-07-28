@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, NamedTuple, Union, Tuple
 
 import numpy as np
+
 import pandas as pd
 from numpy.core._exceptions import _ArrayMemoryError
 from numpy.typing import NDArray
@@ -255,6 +256,9 @@ def _find_header_sections(tsg_str: "list[str]"):
     for i, s in enumerate(tsg_str):
         if len(re_strip.findall(s)) > 0:
             positions.append(i)
+    # this final position if the end of file
+    # it is used to ensure that the final loop when pairing
+    # iterates over the last item
     positions.append(len(tsg_str))
     n_headers: int = len(positions)
     sections: "dict[str, tuple[int,int]]" = {}
@@ -282,6 +286,7 @@ def _parse_section(
         final.append(kvp)
 
     return final
+
 
 
 def _parse_sample_header(
@@ -335,6 +340,7 @@ def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
         >>> line = 'name=ben'
         >>> parse_kvp(line)
         >>> {'name':'ben'}
+
     """
     if line.find(split) >= 0:
         split_line = line.split(split)
@@ -344,6 +350,7 @@ def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
     else:
         kvp = {}
     return kvp
+
 
 
 def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDArray:
@@ -359,15 +366,7 @@ def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDAr
         the third the bands
     Examples:
     """
-    # load array in 1d
-    tmp_array: NDArray[np.float32] = np.fromfile(filename, dtype=np.float32)
 
-    # extract information on array shape
-    n_bands: int = int(coordinates["lastband"])
-    n_samples: int = int(coordinates["lastsample"])
-    # reshape array
-    spectrum = np.reshape(tmp_array, (2, n_samples, n_bands))
-    return spectrum
 
 
 def _calculate_wavelengths(
