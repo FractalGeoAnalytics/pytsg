@@ -440,7 +440,7 @@ def _parse_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectr
     return package
 
 
-def parse_package(foldername: Union[str, Path]):
+def read_package(foldername: Union[str, Path],read_cras:bool=False)->TSG:
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
     if isinstance(foldername, str):
         foldername = Path(foldername)
@@ -481,18 +481,30 @@ def parse_package(foldername: Union[str, Path]):
     # once we have paired the .tsg and .bip files run the reader
     # for the nir/swir and then tir
     # read nir/swir
+    nir:Spectra
+    tir:Spectra
+    lidar:Union[NDArray, None]
+    cras: Cras
+
     if file_pairs.valid_nir():
         nir = _parse_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
-    dir(file_pairs)
+    else:
+        nir = Spectra
+
     if file_pairs.valid_tir():
         tir = _parse_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
-
+    else:
+        tir = Spectra
     if file_pairs.valid_lidar():
         lidar = _read_hires_dat(file_pairs.lidar)
-
-    if file_pairs.valid_cras():
-        cras, _ = _read_cras(file_pairs.cras)
+    else:
+        lidar = None
+    if file_pairs.valid_cras() and read_cras:
+        cras  = _read_cras(file_pairs.cras)
+    else:
+        cras = Cras
+    return TSG(nir, tir, lidar,cras)
 
 if __name__ == 'main':
     foldername = "data/ETG0187"
-    parse_package(foldername)
+    read_package(foldername)

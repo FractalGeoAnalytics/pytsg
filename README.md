@@ -17,7 +17,7 @@ Installation is simple
 
 import pyrexia
 
-pyrexia.read_tsg('\HOLENAME')
+pyrexia.read_package('\HOLENAME')
 
 ```
 
