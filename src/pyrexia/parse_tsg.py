@@ -4,6 +4,7 @@ import struct
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NamedTuple, Union
+from unittest import registerResult
 
 import numpy as np
 import pandas as pd
@@ -500,9 +501,11 @@ def read_package(foldername: Union[str, Path], read_cras: bool = False) -> TSG:
     else:
         cras = Cras
 
-    return TSG(nir, tir, lidar, cras)
+    return TSG(nir, tir,  cras,lidar)
 
 
 if __name__ == "main":
     foldername = "data/ETG0187"
     results = read_package(foldername,read_cras=True)
+    pd.DataFrame(results.cras.section)
+    
