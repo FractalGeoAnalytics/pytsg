@@ -350,7 +350,7 @@ def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
     return kvp
 
 
-def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDArray:
+def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDArray[np.float32]:
     """reads the .bip file as a 1d array then reshapes it according to the dimensions
     as supplied in the coordinates dict
 
@@ -363,6 +363,15 @@ def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDAr
         the third the bands
     Examples:
     """
+    # load array in 1d
+    tmp_array: NDArray[np.float32] = np.fromfile(filename, dtype=np.float32)
+
+    # extract information on array shape
+    n_bands: int = int(coordinates["lastband"])
+    n_samples: int = int(coordinates["lastsample"])
+    # reshape array
+    spectrum = np.reshape(tmp_array, (2, n_samples, n_bands))
+    return spectrum
 
 
 def _calculate_wavelengths(
