@@ -1,3 +1,6 @@
+""" The parse_tsg Module
+"""
+
 import io
 import re
 import struct
@@ -154,6 +157,14 @@ class FilePairs:
 
 
 def read_cras(filename: Union[str, Path]) -> Cras:
+    """ Read a cras file
+
+    Args:
+        filename: filename to read
+
+    Returns:
+        A cras object
+    """
     section_info_format: str = "4f3i"
     tray_info_format: str = "3f2i"
     head_format: str = "20s2I8h4I2h"
@@ -230,7 +241,7 @@ def read_cras(filename: Union[str, Path]) -> Cras:
 
 
 def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
-    """Reads the files with the .tsg extension which are almost a toml file
+    """ Reads the files with the .tsg extension which are almost a toml file
     but not quite so the standard parser doesn't work
 
     Quite simply this function reads the file and strips the newlines at the end
@@ -247,7 +258,7 @@ def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
 
 
 def _find_header_sections(tsg_str: "list[str]"):
-    """Finds the header sections of the .tsg file
+    """ Finds the header sections of the .tsg file
     header sections are defined as strings between square brackets
     """
     re_strip: re.Pattern = re.compile("^\\[[a-zA-Z0-9 ]+\\]")
@@ -326,7 +337,7 @@ def _parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
 
 
 def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
-    """parses strings into Key value pairs
+    """ Parses strings into Key value pairs
     control over the split value is to manage the different seperators used
     in different sections of the file
 
@@ -351,7 +362,7 @@ def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
 
 
 def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDArray[np.float32]:
-    """reads the .bip file as a 1d array then reshapes it according to the dimensions
+    """ Reads the .bip file as a 1d array then reshapes it according to the dimensions
     as supplied in the coordinates dict
 
     Args:
@@ -386,7 +397,7 @@ def _calculate_wavelengths(
 
 
 def read_hires_dat(filename: Union[str, Path]) -> NDArray:
-    """read the *hires.dat file which contains the lidar scan
+    """ Read the *hires.dat* file which contains the lidar scan
     of the material
 
     Args:
