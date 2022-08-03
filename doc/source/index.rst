@@ -13,7 +13,6 @@ https://research.csiro.au/thespectralgeologist/
 **pytsg** is an open source one function utility that imports the spectral geologist file package into a simple object.
 
 
-
 Thanks to CSIRO and in particular Andrew Rodger for assistance in decoding the file structures.
 
 .. toctree::
@@ -24,13 +23,5 @@ Thanks to CSIRO and in particular Andrew Rodger for assistance in decoding the f
    installation/installation
    quick-start/quick-start
    auto_examples/index
+   api/modules
    glossary/glossary
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

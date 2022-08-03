@@ -3,6 +3,18 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+
+# -- Path setup --------------------------------------------------------------
+
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('../src/pytsg'))
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -14,6 +26,8 @@ author = 'Ben Chi'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary',  # to document the api
+              'sphinx.ext.viewcode',            # to add view code links
+              'sphinx.ext.coverage',
               'sphinx.ext.napoleon',            # for parsing numpy/google docstrings
               'sphinx_gallery.gen_gallery',     # to generate a gallery of examples
               'sphinx_autodoc_typehints',
