@@ -51,6 +51,13 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', '_templates']
 
+
+rst_epilog = """
+.. |br| raw:: html
+
+   <br />
+"""
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 

@@ -108,7 +108,7 @@ class FilePairs:
         return pairs
 
     def _get_lidar(self) -> Union[Path, None]:
-        has_lidar: bool = isinstance(self.lidar, Path)
+        has_lidar: bool = ('lidar' in self.__dict__.keys()) and (isinstance(self.lidar, Path))
         if has_lidar:
             pairs = self.lidar
         else:
@@ -443,7 +443,7 @@ def _parse_tsg(
     return d_info
 
 
-def read_tsg_bip_pair(tsg_file: Path, bip_file: Path, spectrum: str) -> Spectra:
+def read_tsg_bip_pair(tsg_file: Union[Path, str], bip_file: Union[Path, str], spectrum: str) -> Spectra:
     fstr = _read_tsg_file(tsg_file)
     headers = _find_header_sections(fstr)
     info = _parse_tsg(fstr, headers)
@@ -460,6 +460,10 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> 
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
     if isinstance(foldername, str):
         foldername = Path(foldername)
+
+    if not foldername.exists():
+        raise FileNotFoundError('The directory does not exist.')
+
     # we are parsing the folder structure here and checking that
     # pairs of files exist in this case we are making sure
     # that there are .tsg files with corresponding .bip files
