@@ -77,12 +77,12 @@ class TSG:
 class FilePairs:
     """Class for keeping track of an item in inventory."""
 
-    nir_tsg: Path
-    nir_bip: Path
-    tir_tsg: Path
-    tir_bip: Path
-    lidar: Path
-    cras: Path
+    nir_tsg: Union[Path,None] = None
+    nir_bip: Union[Path,None] = None
+    tir_tsg: Union[Path,None] = None
+    tir_bip: Union[Path,None] = None
+    lidar: Union[Path,None] = None
+    cras: Union[Path,None] = None
 
     def _get_nir(self) -> "Union[tuple[Path,Path], None]":
         has_tsg: bool = isinstance(self.nir_tsg, Path)
