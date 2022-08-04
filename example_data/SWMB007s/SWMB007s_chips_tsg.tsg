@@ -1,0 +1,739 @@
+[description]
+SPECTRAL LIBRARY
+Created :2018-12-13 06:06:55
+Reference mineral = Gold
+TSG  7.27 Dataset
+UUID :2b788034-41e9-4b63-a885-05f9a7227f7
+Executive Summary :GSWA UWI: NA|WAMEX Report ID: A115877|Tectonic Unit: Gascoyne Province|250K Map Sheet: Edmund SF 50-14|100K Map Sheet:  Edmund 2150|Archive Location: Returned to company
+HyLogger :0 0.000000 19
+TSG product index :5
+Last written by :TSG (trial) 8.0.7.4
+Last modified :2022-07-29 11:29:56
+Linescan file :D:\TSG\cache\2b788034-41e9-4b63-a885-05f9a7227f7\SWMB007s_chips_tsg_cras.bip
+Associated dataset :D:\TSG\cache\2b788034-41e9-4b63-a885-05f9a7227f7\SWMB007s_chips_tsg_tir
+Custom colours : 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+Layout index :0
+On-open extras :1
+Aux extension :0
+
+[structure]
+datatype = float
+dataheader = 0
+
+[coordinates]
+firstsample = 1
+lastsample = 30
+firstline = 1
+lastline = 9
+firstband = 1
+lastband = 531
+
+[dimensions]
+samples = 30
+lines = 9
+bands = 531
+classes = 11
+sclrsets = 3
+reservedparams = 80
+spacespecs = 30
+domains = 1
+
+[platform]
+byteorder = 3
+fpcheck = -971227136
+
+[reflibs]
+system = SYS_TSA63_SWIR
+system2 = SYS_TSA62_VNIR
+tsa1 = 7
+tsa2 = 7
+
+[dbextra]
+machine id = 19
+domain id = 738222a3-66de-446c-a008-e9979d63976
+imagelog id = efcbdf14-a4ba-4469-939b-d082e7b56df
+proflog id = 
+traylog id = 06ff188d-2b17-4532-bf62-4beec31aacd
+seclog id = 53a3ffff-8bbd-482b-8737-66fa4be241e
+traypicslog id = 6b1a7491-9ed8-4bfd-aac8-8acedf46a22
+traythumbslog id = b7cfd9e1-5533-4742-9bc7-28f188676d7
+mospiclog id = 4d8234bf-8fdf-450d-be2a-0debd1c47f1
+domaining0log id = 12e1a1bb-be39-4be5-aa7e-6015d83dcd8
+domaininglog id = 
+ntrays = 2
+nsections = 2
+nsamples = 30
+dbase time = 1657859220
+lscan time = 0
+published = 1
+lat lon = -23.880398000000000 116.141752000000000
+geo datum = GDA94
+collar = 322.605999999999990 0.000000000000000 -90.000000000000000
+drill date = 2017-10-11 14:07:32
+scan date = 2018-12-11 13:40:09
+dataset name = SWMB007s_chips
+drillhole name = SWMB007s
+hylogger name = HyLogger 3-2
+project name = Yangibana, Siphon Well Prospect
+current owner = Hastings Tech Metals
+author name = Lena Hancock
+hole service = http://geossdi.dmp.wa.gov.au/resource/feature/gswa/borehole/
+hylogging database = sqlp2\prd2@GS_NVCL
+
+[checklist]
+ejfilter = 0
+l0archived = 0
+fmstatus = 3
+tidlstatus = 0
+imgstatus = 24
+utsa0 = 1
+utsa1 = 0
+utsa2 = 0
+imports = 0
+rmarks = 0
+batstatus = 0
+sclrstatus = 0
+domains = 0
+plots = 0
+layouts = 0
+dbase = 0
+
+[dynaimp]
+asd.smwvl0 = 0
+asd.smwvl1 = 0
+asd.dstep = 0
+asd.smth = 0
+asd.dogps = 0
+asd.doinstr = 0
+asd.isun = 0
+asd.parsefn = 0
+asd.fndepch = 0
+ag.dowc = 0
+ag.wspace = 0
+ag.w0 = 0.000000
+ag.c0 = 0.000000
+ag.c1 = 0.000000
+ag.c2 = 0.000000
+ag.c3 = 0.000000
+watchdir = 
+movedir = 
+wvlstart = 0.000000
+wvlinc = 0.000000
+wunits = 0
+nsext = 0
+nchan = 0
+source = 0
+srcwvl = 0
+itpmeth = 0
+ddrop = 0
+watch = 0
+active = 0
+oexfmt = 0
+oexgps = 0
+tperc = 0
+thdr = 0
+
+[band headers]
+0:Flags
+1:FeatExMethod
+2:NumFeats
+3:Depth1
+4:Centre1
+5:Width1
+6:Depth2
+7:Centre2
+8:Width2
+9:Depth3
+10:Centre3
+11:Width3
+12:Depth4
+13:Centre4
+14:Width4
+15:Depth5
+16:Centre5
+17:Width5
+18:Depth6
+19:Centre6
+20:Width6
+21:Depth7
+22:Centre7
+23:Width7
+24:Depth8
+25:Centre8
+26:Width8
+27:Depth9
+28:Centre9
+29:Width9
+30:Depth10
+31:Centre10
+32:Width10
+33:Depth11
+34:Centre11
+35:Width11
+36:Depth12
+37:Centre12
+38:Width12
+39:Depth13
+40:Centre13
+41:Width13
+42:Depth14
+43:Centre14
+44:Width14
+45:Depth15
+46:Centre15
+47:Width15
+48:Depth16
+49:Centre16
+50:Width16
+51:Depth17
+52:Centre17
+53:Width17
+54:Depth18
+55:Centre18
+56:Width18
+57:Depth19
+58:Centre19
+59:Width19
+60:Depth20
+61:Centre20
+62:Width20
+63:Depth21
+64:Centre21
+65:Width21
+66:Depth22
+67:Centre22
+68:Width22
+69:Depth23
+70:Centre23
+71:Width23
+72:Depth24
+73:Centre24
+74:Width24
+75:Depth25
+76:Centre25
+77:Width25
+80:Depth (m);0.500000;29.500000;2;-1;0;0;0;15.000000;8.803409;0;0;0;0;0;0;1657859198;0;-1;0;1;0;0;536871953C6;738222a3-66de-446c-a008-e9979d63976;0;0;0;0
+81:Min1 sTSAS;1.000000;8.000000;2;0;1;0;0;4.766667;2.725149;83;0;0;0;0;0;1657859202;0;0;0;4;0;1;402653185C0;02046b3b-c8ee-44df-85e8-4a1544bd12d;705;0;108;1
+82:Tray;0.000000;1.000000;2;1;0;0;0;0.333333;0.479463;0;0;0;0;0;0;1548821062;0;-1;0;0;0;0;536870961C1;06ff188d-2b17-4532-bf62-4beec31aacd;0;0;0;0
+83:Final Mask;0.000000;1.000000;2;-1;0;0;0;1.000000;0.000000;0;0;64;0;0;1;1657859213;0;-1;0;2;0;0;537001984C13;0726fff0-05e6-4d7c-a1c5-d0b222c8cc7;0;0;0;1
+84:Hematite-goethite_distr;887.521423;953.313904;8;0;-1;913.506409;14.502047;83;0;64;3;0;0;1657859215;0;-1;0;19;0;0;-2147483648C0;085f41e1-3581-48f4-ab1b-b005a57f3fd;0;0;0;0
+85:Min2 uTSAS;1.000000;8.000000;2;2;3;0;1;4.433333;3.047705;83;0;0;0;0;0;1657859209;1;0;0;50;0;3;402653185C0;11cc93f4-57b5-478c-9299-92268a6204b;705;1;108;1
+86:Wt3 uTSAS;0.164323;0.310491;2;-1;3;2;2;0.241972;0.051464;83;0;0;18;0;0;1657859211;2;2;0;50;0;3;402653185C0;1621a0fd-5cd3-44ec-9edf-5578890ed61;705;1;110;0
+87:Grp2 sTSAV;3.000000;3.000000;2;3;2;1;1;3.000000;0.000000;83;0;0;21;0;0;1657859205;1;1;0;5;0;2;402653185C0;1bef2506-f123-4e00-b1b8-56876129836;704;0;97;1
+88:Error sTSAV;21.563395;495.528625;2;-1;2;3;0;210.547791;134.593185;83;0;0;7;0;0;1657859220;0;3;0;5;0;2;402653185C0;231207d6-e821-4e4c-b535-b355b26872d;704;0;99;0
+89:1730 nm;0.000000;0.000000;11;1660.000000;1796.000000;1700.000000;1765.000000;0.000000;0.016000;0.000000;0.000000;1;0;4;9;0;1;0;0;0.000000;0.000000;83;0;64;30;0;0;1657859210;0;-1;0;21;0;0;-2147483648C0;23fe1cc9-3190-48d0-a728-cdba88ff391;0;0;0;0
+90:TraySamp;1.000000;30.000000;2;-1;0;0;0;15.500000;8.803409;0;0;0;0;0;0;1657859202;0;-1;0;0;0;0;536871057C3;24b4c0ed-00af-4dc0-8cc7-8758ba074d7;0;0;0;0
+91:sec_end_mask;0.000000;1.000000;9;5;-1;0.000000;0.000000;0.000000;0;0;0;0;0.000000;0.000000;0;0.000000;0;0;0;0;0.866667;0.345746;0;0;0;0;0;1;1657859214;0;-1;0;2;0;0;-2147483648C0;25cf0997-abe3-4c32-af51-51ddd3e9b68;0;0;0;0
+92:Wt1 sTSAV;0.500495;1.000000;2;-1;2;2;0;0.851953;0.199801;83;0;0;7;0;0;1657859207;0;2;0;5;0;2;402653185C0;294bb93a-041c-478a-8ab4-656a5367d1e;704;0;98;0
+93:Error sTSAS;27.256014;136.479828;2;-1;1;3;0;70.509254;36.355228;83;0;0;0;0;0;1657859205;0;3;0;4;0;1;402653185C0;33c635fd-09ae-4b76-aff2-27af6bafbb0;705;0;111;0
+94:CustSample;0.000000;0.000000;10;-1;0;0;;1;1;0;0.000000;2;1304.000000;1400.000000;1600.000000;1850.000000;2100.000000;2496.000000;0.000000;0.000000;0;0.000000;;0.000000;0.000000;0;0;0;0;0;0;0;;0.000000;0.000000;0;0;64;30;0;0;1657859202;0;-1;0;6;0;0;1048577C0;35279044-9071-4363-a743-26e4e288ef9;0;0;0;0
+95:HyLogDiag;0.000000;1.000000;2;4;0;0;0;0.133333;0.345746;0;0;0;0;0;0;1657859202;0;-1;0;0;0;0;538968081C16;3bc87735-0e26-471d-b6ce-ac8824b1922;0;0;0;0
+96:SNR sTSAV;418.029388;1223.058594;2;-1;2;4;0;717.540039;185.540848;83;0;0;0;0;0;1657859206;0;4;0;5;0;2;402653185C0;3dd51d38-6e27-4b00-b3bd-14519585c30;704;0;100;0
+97:AspRat sTSAS;3.054130;6.671278;2;-1;1;9;0;4.237485;0.774458;83;0;0;0;0;0;1657859211;0;9;0;4;0;1;402653185C0;3e50af72-342c-48e8-ad03-25562d1e723;705;0;116;0
+98:Domain;0.000000;0.000000;2;5;0;0;0;0.000000;0.000000;0;0;0;0;0;0;1657859206;0;-1;0;1;0;0;536870929C22;40f5c79d-925a-46e8-b862-0e52984368e;0;0;0;1
+99:Wt2 uTSAS;0.213444;0.485867;2;-1;3;2;1;0.380915;0.066537;83;0;0;0;0;0;1657859209;1;2;0;50;0;3;402653185C0;43dd9205-139a-438c-b4b1-eecf5fce697;705;1;110;0
+100:SNR uTSAS;824.662598;1572.849731;2;-1;3;4;0;1185.850220;216.162567;83;0;0;0;0;0;1657859212;0;4;0;50;0;3;402653185C0;44dbacd8-f833-42fd-b3b7-ca9936f08b6;705;0;112;0
+101:Date;161345548895387650.000000;161347043544006660.000000;2;-1;0;0;0;161346287629762560.000000;453724209152.000000;0;0;64;0;0;0;1657859202;0;-1;0;19;0;0;537395201C15;5017ac47-81fd-42ab-a841-472949b0f25;0;0;0;0
+102:Bound_Water uTSAS;0.000000;0.289164;2;-1;3;8;0;0.070163;0.070995;83;0;0;0;0;0;1657859212;0;8;0;50;0;3;402653185C0;51f93704-3c92-4127-8c01-1e52709a5ac;705;0;115;0
+103:Section;1.000000;2.000000;2;-1;0;0;0;1.333333;0.479463;0;0;0;0;0;0;1548821063;0;-1;0;0;0;0;536870993C2;53a3ffff-8bbd-482b-8737-66fa4be241e;0;0;0;0
+104:Grp1 sTSAS;1.000000;3.000000;2;6;1;1;0;1.800000;0.996546;83;0;0;0;0;0;1657859203;0;1;0;4;0;1;402653185C0;56133b84-5533-40b2-bcdc-856adcdfbbd;705;0;109;1
+105:Ferrous iron abundance;0.940974;1.028660;8;1;-1;0.976370;0.023560;0;0;64;0;0;0;1657859213;0;-1;0;19;0;0;-2147483648C0;5b2be383-4b81-42e2-9270-6249d17e9c3;0;0;0;0
+106:Min2 sTSAV;4.000000;5.000000;2;7;2;0;1;4.888889;0.333333;83;0;0;21;0;0;1657859205;1;0;0;5;0;2;402653185C0;5cd2448b-21bd-4fc7-af58-b7620cf961f;704;0;96;1
+107:HoleID;0.000000;0.000000;2;8;0;0;0;0.000000;0.000000;0;0;0;0;0;0;1657859204;0;-1;0;0;0;0;536875025C8;5cdfd99d-9f29-4a41-8910-def760426f3;0;0;0;0
+108:Wt2 sTSAS;0.213444;0.495816;2;-1;1;2;1;0.398059;0.067280;83;0;0;0;0;0;1657859204;1;2;0;4;0;1;402653185C0;6712b718-551e-4c50-b9ae-26b57bf6d12;705;0;110;0
+109:NIL_Stat sTSAV;3.090400;83.518524;2;-1;2;5;0;26.717432;21.971050;83;0;0;0;0;0;1657859209;0;5;0;5;0;2;402653185C0;678fcc84-fa28-4911-9cd0-dcce6e030c8;704;0;101;0
+110:Wt1 uTSAS;0.355272;0.786556;2;-1;3;2;0;0.522297;0.103805;83;0;0;0;0;0;1657859210;0;2;0;50;0;3;402653185C0;6827ab87-7028-4477-aa2b-7e5e45cb8a9;705;1;110;0
+111:Albedo;0.198330;0.499825;3;4;1450.000000;1000.000000;0;0;0;0;0.000000;0.317934;0.071668;0;0;64;0;0;0;1657859212;0;-1;0;19;0;0;-2147483648C0;74878434-3a01-49c4-bb31-7e44e1ab2d3;0;0;0;0
+112:recovery_rate;39.682522;39.682568;9;6;-1;0.000000;0.000000;0.000000;0;0;0;0;0.000000;0.000000;0;1.000000;80;0;0;0;39.682537;0.000013;0;0;64;0;0;0;1657859210;0;-1;0;0;0;0;537133056C14;7503eacc-ea87-4c6b-aacf-0a5caf1197c;0;0;0;0
+113:prof_min;15.988767;24.573833;2;-1;0;0;0;19.984575;2.345550;0;0;0;0;0;0;1657859203;0;-1;0;0;0;0;17C0;7b06f1d3-ca93-45cb-8771-115b4482e50;0;0;0;0
+114:Grp2 sTSAS;1.000000;3.000000;2;6;1;1;1;1.733333;0.980265;83;0;0;0;0;0;1657859208;1;1;0;4;0;1;402653185C0;7b162b25-fe3f-447c-9308-56e2a67c517;705;0;109;1
+115:Wt3 sTSAS;0.159368;0.274184;2;-1;1;2;2;0.209949;0.040893;83;0;0;20;0;0;1657859203;2;2;0;4;0;1;402653185C0;81b6e3d3-371d-4e4d-9260-06902666c6d;705;0;110;0
+116:CustScore;0.000000;0.000000;10;-1;94;0;;1;2;0;0.000000;2;1304.000000;1400.000000;1600.000000;1850.000000;2100.000000;2496.000000;0.000000;0.000000;0;0.000000;;0.000000;0.000000;0;0;0;0;0;0;0;;0.000000;0.000000;0;0;64;30;0;0;1657859202;0;-1;0;6;0;0;1048577C0;837a89f6-f4d7-4e1f-825d-d4e0e1fe236;0;0;0;0
+117:Grp3 sTSAS;1.000000;12.000000;2;6;1;1;2;3.400000;4.575296;83;0;0;20;0;0;1657859204;2;1;0;4;0;1;402653185C0;86d34e78-b45b-413c-86f7-acd5b7b9e19;705;0;109;1
+118:NIL_Stat sTSAS;0.070832;0.178156;2;-1;1;5;0;0.132237;0.023925;83;0;0;0;0;0;1657859210;0;5;0;4;0;1;402653185C0;8b492f01-06db-4608-9a57-1dd444fd7e2;705;0;113;0
+119:Wt1 sTSAS;0.378339;0.786556;2;-1;1;2;0;0.531959;0.085970;83;0;0;0;0;0;1657859205;0;2;0;4;0;1;402653185C0;8c314ba5-f8a6-4bea-b790-6d907de7b71;705;0;110;0
+120:Bound_Water sTSAS;0.000000;0.265340;2;-1;1;8;0;0.097167;0.070529;83;0;0;0;0;0;1657859205;0;8;0;4;0;1;402653185C0;8ef12413-6ab9-42a5-a5b9-26c4926430b;705;0;115;0
+121:NIL_Stat uTSAS;0.070832;0.178156;2;-1;3;5;0;0.132237;0.023925;83;0;0;0;0;0;1657859209;0;5;0;50;0;3;402653185C0;8f4c4f31-d98d-441c-b45f-dae0a4ccf9b;705;0;113;0
+122:TNorm uTSAS;0.439238;1.064469;2;-1;3;10;0;0.786700;0.167357;83;0;0;0;0;0;1657859212;0;10;0;50;0;3;402653185C0;92a022ae-926a-4f86-a018-7f09d047da9;705;0;117;0
+123:Min3 sTSAS;1.000000;34.000000;2;0;1;0;2;8.400000;13.721030;83;0;0;20;0;0;1657859204;2;0;0;4;0;1;402653185C0;a1146123-c4df-4ebc-a10a-f6544a503e1;705;0;108;1
+124:Unbound_Water sTSAS;0.000000;0.456308;2;-1;1;7;0;0.239727;0.157062;83;0;0;0;0;0;1657859203;0;7;0;4;0;1;402653185C0;a41f9be8-befb-41b5-b380-4db537811e4;705;0;114;0
+125:virtual_section;1.000000;2.000000;9;9;-1;0.000000;0.000000;0.000000;0;0;0;0;0.000000;0.000000;0;0.000000;0;0;0;0;1.333333;0.479463;0;0;0;0;0;0;1657859207;0;-1;0;0;0;0;536870928C24;a4835049-a0e0-460b-8bd6-7db0d2e90ef;0;0;0;0
+126:Kahuna;0.000000;1.000000;8;2;-1;0.866667;0.345746;0;0;0;0;0;1;1657859209;0;-1;0;2;0;0;-2147483648C0;a50fa529-5959-4788-90c4-48a1fb343f4;0;0;0;0
+127:Min1 sTSAV;4.000000;5.000000;2;7;2;0;0;4.043478;0.208514;83;0;0;7;0;0;1657859209;0;0;0;5;0;2;402653185C0;a5588eef-d7b3-4f2b-b391-d52207bb2ee;704;0;96;1
+128:Wt2 sTSAV;0.216007;0.499505;2;-1;2;2;1;0.378343;0.108440;83;0;0;21;0;0;1657859208;1;2;0;5;0;2;402653185C0;a783c451-b722-4fcc-8b90-844c9c7ecb2;704;0;98;0
+129:colour tot_sat;14723.000000;26544.000000;9;8;-1;0.000000;0.000000;0.000000;0;0;0;0;0.000000;0.000000;0;0.000000;0;2;0;3;19340.966797;3091.667236;83;1;64;0;0;0;1657859213;0;-1;0;55;0;0;-2147483648C0;ab166ba1-b681-4d70-a0cc-57e4b9e4f23;0;0;0;0
+130:SecDist (mm);21.000000;499.800018;2;-1;0;0;0;218.400009;141.486252;0;0;0;0;0;0;1657859203;0;-1;0;0;0;0;536872977C7;af6155a9-51a6-49b0-bcbb-41978c34993;0;0;0;0
+131:SecSamp;1.000000;20.000000;2;-1;0;0;0;8.833333;5.614534;0;0;0;0;0;0;1657859203;0;-1;0;0;0;0;536871185C4;af87baab-d396-465f-9797-8c8fef2124d;0;0;0;0
+132:Grp1 sTSAV;3.000000;3.000000;2;3;2;1;0;3.000000;0.000000;83;0;0;7;0;0;1657859217;0;1;0;5;0;2;402653185C0;b492c73f-bb3d-41b1-8fea-60712541675;704;0;97;1
+133:TNorm sTSAS;0.425270;1.099940;2;-1;1;10;0;0.788272;0.195586;83;0;0;0;0;0;1657859207;0;10;0;4;0;1;402653185C0;b6624705-a606-4179-adda-aaf9e3acc37;705;0;117;0
+134:Min1 uTSAS;2.000000;8.000000;2;2;3;0;0;4.633333;2.632468;83;0;0;0;0;0;1657859208;0;0;0;50;0;3;402653185C0;bca9e3a0-aaa6-4ba7-9f22-fffe74d93ee;705;1;108;1
+135:RockMarks;0.000000;0.000000;2;9;0;0;0;0.000000;0.000000;0;0;0;30;0;0;1657859203;0;-1;0;1;0;0;553648145C19;bcc868f4-9964-4b33-b289-ecc99a243c2;0;0;0;1
+136:RelRange;0.272653;0.811590;11;1300.000000;2500.000000;1300.000000;2500.000000;0.000000;0.000000;0.000000;0.000000;0;0;0;1;0;7;0;0;0.548906;0.155867;0;0;64;0;0;0;1657859212;0;-1;0;19;0;0;-2147483648C0;bd7719a7-624d-4a9e-8c10-fe820ceb18b;0;0;0;0
+137:Min3 uTSAS;1.000000;8.000000;2;2;3;0;2;3.333333;3.446562;83;0;0;18;0;0;1657859216;2;0;0;50;0;3;402653185C0;c34335e5-b2ab-4206-98c9-b9f2ef25edc;705;1;108;1
+138:Error uTSAS;27.256014;135.629166;2;-1;3;3;0;65.396965;26.740919;83;0;0;0;0;0;1657859212;0;3;0;50;0;3;402653185C0;d062d597-b185-43bb-88ce-c050bcac781;705;1;111;0
+139:Albedo (2);0.198330;0.499825;8;3;-1;0.317934;0.071668;83;0;64;0;0;0;1657859213;0;-1;0;19;0;0;-2147483648C0;d2607f0a-47bf-40d4-a404-07ad202b82e;0;0;0;0
+140:Ferric oxide abundance 25062014;0.000039;0.001715;8;4;-1;0.000746;0.000465;83;0;64;0;0;0;1657859210;0;-1;0;19;0;0;-2147483648C0;e0a1fc1b-de52-4e73-972d-0a4e9f9c151;0;0;0;0
+141:Grp3 uTSAS;1.000000;3.000000;2;10;3;1;2;1.666667;0.984732;83;0;0;18;0;0;1657859209;2;1;0;50;0;3;402653185C0;e635d233-bafd-4472-b952-7e339cd2e32;705;1;109;1
+142:Grp2 uTSAS;1.000000;3.000000;2;10;3;1;1;1.800000;0.996546;83;0;0;0;0;0;1657859211;1;1;0;50;0;3;402653185C0;ebeec3e4-1c2e-4439-b2f7-b28487c156e;705;1;109;1
+143:Min2 sTSAS;1.000000;8.000000;2;0;1;0;1;4.233333;3.002106;83;0;0;0;0;0;1657859203;1;0;0;4;0;1;402653185C0;ee8c99d3-1150-472f-b58a-39d4a724be5;705;0;108;1
+144:SNR sTSAS;824.662598;1572.849731;2;-1;1;4;0;1185.850220;216.162567;83;0;0;0;0;0;1657859203;0;4;0;4;0;1;402653185C0;f12ec8b4-4c61-4009-9cbc-ed80f6b0724;705;0;112;0
+145:AspRat uTSAS;3.054130;6.671278;2;-1;3;9;0;4.237485;0.774458;83;0;0;0;0;0;1657859210;0;9;0;50;0;3;402653185C0;f36b6bca-75e7-457d-9999-f909db25683;705;0;116;0
+146:Unbound_Water uTSAS;0.000000;0.405226;2;-1;3;7;0;0.197210;0.173540;83;0;0;0;0;0;1657859210;0;7;0;50;0;3;402653185C0;f4f122aa-1a25-4600-814e-d8c2dd51249;705;0;114;0
+147:Subpix;0.900000;1.000000;2;-1;0;0;0;1.000000;0.000000;0;0;0;0;0;0;1657859204;0;-1;0;0;0;0;536871441C5;f5ab26e7-c005-43cc-863b-84b562be745;0;0;0;0
+148:Grp1 uTSAS;1.000000;3.000000;2;10;3;1;0;1.733333;0.980265;83;0;0;0;0;0;1657859213;0;1;0;50;0;3;402653185C0;f888756e-fe61-42d5-9a98-d2afde3c468;705;1;109;1
+149:CustGroup;0.000000;0.000000;10;-1;0;0;;1;1;0;0.000000;1;1304.000000;1400.000000;1600.000000;1850.000000;2100.000000;2496.000000;0.000000;0.000000;0;0.000000;;0.000000;0.000000;0;0;0;0;0;0;0;;0.000000;0.000000;0;0;64;30;0;0;1657859202;0;-1;0;6;0;0;1048577C0;f8df53e8-5fa5-495f-a6ea-86a070a4d98;0;0;0;0
+
+[sample headers]
+0:SWMB007s_Chips_0001-1_1  T=0001 L=1 P=1 D=0.500000 H=SWMB007s_Chips
+1:SWMB007s_Chips_0001-1_2  T=0001 L=1 P=2 D=1.500000 H=SWMB007s_Chips
+2:SWMB007s_Chips_0001-1_3  T=0001 L=1 P=3 D=2.500000 H=SWMB007s_Chips
+3:SWMB007s_Chips_0001-1_4  T=0001 L=1 P=4 D=3.500000 H=SWMB007s_Chips
+4:SWMB007s_Chips_0001-1_5  T=0001 L=1 P=5 D=4.500000 H=SWMB007s_Chips
+5:SWMB007s_Chips_0001-1_6  T=0001 L=1 P=6 D=5.500000 H=SWMB007s_Chips
+6:SWMB007s_Chips_0001-1_7  T=0001 L=1 P=7 D=6.500000 H=SWMB007s_Chips
+7:SWMB007s_Chips_0001-1_8  T=0001 L=1 P=8 D=7.500000 H=SWMB007s_Chips
+8:SWMB007s_Chips_0001-1_9  T=0001 L=1 P=9 D=8.500000 H=SWMB007s_Chips
+9:SWMB007s_Chips_0001-1_10  T=0001 L=1 P=10 D=9.500000 H=SWMB007s_Chips
+10:SWMB007s_Chips_0001-1_11  T=0001 L=1 P=11 D=10.500000 H=SWMB007s_Chips
+11:SWMB007s_Chips_0001-1_12  T=0001 L=1 P=12 D=11.500000 H=SWMB007s_Chips
+12:SWMB007s_Chips_0001-1_13  T=0001 L=1 P=13 D=12.500000 H=SWMB007s_Chips
+13:SWMB007s_Chips_0001-1_14  T=0001 L=1 P=14 D=13.500000 H=SWMB007s_Chips
+14:SWMB007s_Chips_0001-1_15  T=0001 L=1 P=15 D=14.500000 H=SWMB007s_Chips
+15:SWMB007s_Chips_0001-1_16  T=0001 L=1 P=16 D=15.500000 H=SWMB007s_Chips
+16:SWMB007s_Chips_0001-1_17  T=0001 L=1 P=17 D=16.500000 H=SWMB007s_Chips
+17:SWMB007s_Chips_0001-1_18  T=0001 L=1 P=18 D=17.500000 H=SWMB007s_Chips
+18:SWMB007s_Chips_0001-1_19  T=0001 L=1 P=19 D=18.500000 H=SWMB007s_Chips
+19:SWMB007s_Chips_0001-1_20  T=0001 L=1 P=20 D=19.500000 H=SWMB007s_Chips
+20:SWMB007s_Chips_0001-2_21  T=0001 L=2 P=1 D=20.500000 H=SWMB007s_Chips
+21:SWMB007s_Chips_0001-2_22  T=0001 L=2 P=2 D=21.500000 H=SWMB007s_Chips
+22:SWMB007s_Chips_0001-2_23  T=0001 L=2 P=3 D=22.500000 H=SWMB007s_Chips
+23:SWMB007s_Chips_0001-2_24  T=0001 L=2 P=4 D=23.500000 H=SWMB007s_Chips
+24:SWMB007s_Chips_0001-2_25  T=0001 L=2 P=5 D=24.500000 H=SWMB007s_Chips
+25:SWMB007s_Chips_0001-2_26  T=0001 L=2 P=6 D=25.500000 H=SWMB007s_Chips
+26:SWMB007s_Chips_0001-2_27  T=0001 L=2 P=7 D=26.500000 H=SWMB007s_Chips
+27:SWMB007s_Chips_0001-2_28  T=0001 L=2 P=8 D=27.500000 H=SWMB007s_Chips
+28:SWMB007s_Chips_0001-2_29  T=0001 L=2 P=9 D=28.500000 H=SWMB007s_Chips
+29:SWMB007s_Chips_0001-2_30  T=0001 L=2 P=10 D=29.500000 H=SWMB007s_Chips
+
+[line headers]
+0:Reflectance; 0.069047; 0.605926; 0
+1:Parameters
+2:HullQuot; 0.399045; 1.000000; 0
+3:Norm. Refl.; 0.212338; 1.418789; 0
+4:Norm. HullQ; 0.000000; 1.000000; 0
+5:Deriv1;-6.726308; 5.150110; 0
+6:Deriv2;-1.965653; 2.591297; 0
+7:Hull; 0.075622; 0.605926; 0
+8:TSA Residual;-0.250000; 0.250000; 0
+
+[spec calc]
+0:0;0;0;0;0;0;0;0;269645fd-19eb-4456-8740-844f1fd279e
+1:4;0;1;0;0;0;0;0;e42ca263-0474-487f-9183-bcaf0fef766
+2:8;0;0;1;0;0;0;0;64f9c8ef-cc0c-4f8c-8593-5b0aa432247
+3:12;0;1;3;0;0;0;0;bbff1509-97e6-420c-95ab-7397ffbfe28
+4:16;0;0;0;10;10;2;1;311aa440-8fce-40ce-ba89-7032beb9409
+5:16;0;0;0;10;10;2;2;1e97350c-9386-4d7e-9dfe-c59f3d31036
+6:4;0;17;0;0;0;0;0;f51eb406-3f69-452f-9aed-0a45ec21003
+7:4;0;144;0;0;0;0;0;8c311d4c-854e-4121-b703-5d8d6a016d4
+
+[class 0]
+name = S_SWIR_TSA705 Minerals
+max = 61
+colours = 15126526 8355839 5526783 2763519 255 8388607 6684671 5046271 11384516 10661828 9939396 14614015 14023935 13499647 12975103 12450815 8388479 4194111 65280 6050152 5258088 16744447 16733439 16722687 16711935 7323035 6960452 6946847 16777087 16776960 9931705 8811705 7691705 16744319 16736095 16727871 16719647 16711680 4351080 3695464 3039848 2449768 1794152 2395320 11513772 11513772 11513771 11513771 11513771 11513770 11513770 11513770 3342335 1703935 65535 8947848 8947848 8947848 8947848 8947848 8947848
+0:Opal
+1:Dickite
+2:Kaolinite-PX
+3:Kaolinite-WX
+4:Nacrite
+5:Muscovite
+6:Paragonite
+7:Phengite
+8:Montmorillonite
+9:Nontronite
+10:Saponite
+11:Diaspore
+12:Gibbsite
+13:Prehnite
+14:Pyrophyllite
+15:Topaz
+16:Chlorite-Fe
+17:Chlorite-FeMg
+18:Chlorite-Mg
+19:Biotite
+20:Phlogopite
+21:Actinolite
+22:Hornblende
+23:Tremolite
+24:Riebeckite
+25:Serpentine
+26:Brucite
+27:Talc
+28:Epidote
+29:Zoisite
+30:Tourmaline
+31:Tourmaline-Fe
+32:Rubellite
+33:Ankerite
+34:Siderite
+35:Calcite
+36:Dolomite
+37:Magnesite
+38:Alunite-K
+39:Alunite-Na
+40:Alunite-NH
+41:Gypsum
+42:Jarosite
+43:Palygorskite
+44:Vegetation-Dry
+45:IsaWhite
+46:IsaYellow
+47:PlasticChipTray
+48:Teflon
+49:WhiteMarker
+50:Wood
+51:YellowMarker
+52:MuscoviticIllite
+53:ParagoniticIllite
+54:PhengiticIllite
+55:Aspectral
+56:NotInLibrary
+57:Dark
+58:Noisy
+59:HighError
+60:MaskedOff
+
+[class 1]
+name = Tray
+max = 2
+colours = 65335 13631722
+0:0001-1
+1:0001-2
+
+[class 2]
+name = U_SWIR_TSA705 Minerals
+max = 61
+colours = 15126526 8355839 5526783 2763519 255 8388607 6684671 5046271 11384516 10661828 9939396 14614015 14023935 13499647 12975103 12450815 8388479 4194111 65280 6050152 5258088 16744447 16733439 16722687 16711935 7323035 6960452 6946847 16777087 16776960 9931705 8811705 7691705 16744319 16736095 16727871 16719647 16711680 4351080 3695464 3039848 2449768 1794152 2395320 11513772 11513772 11513771 11513771 11513771 11513770 11513770 11513770 3342335 1703935 65535 8947848 8947848 8947848 8947848 8947848 8947848
+0:Opal
+1:Dickite
+2:Kaolinite-PX
+3:Kaolinite-WX
+4:Nacrite
+5:Muscovite
+6:Paragonite
+7:Phengite
+8:Montmorillonite
+9:Nontronite
+10:Saponite
+11:Diaspore
+12:Gibbsite
+13:Prehnite
+14:Pyrophyllite
+15:Topaz
+16:Chlorite-Fe
+17:Chlorite-FeMg
+18:Chlorite-Mg
+19:Biotite
+20:Phlogopite
+21:Actinolite
+22:Hornblende
+23:Tremolite
+24:Riebeckite
+25:Serpentine
+26:Brucite
+27:Talc
+28:Epidote
+29:Zoisite
+30:Tourmaline
+31:Tourmaline-Fe
+32:Rubellite
+33:Ankerite
+34:Siderite
+35:Calcite
+36:Dolomite
+37:Magnesite
+38:Alunite-K
+39:Alunite-Na
+40:Alunite-NH
+41:Gypsum
+42:Jarosite
+43:Palygorskite
+44:Vegetation-Dry
+45:IsaWhite
+46:IsaYellow
+47:PlasticChipTray
+48:Teflon
+49:WhiteMarker
+50:Wood
+51:YellowMarker
+52:MuscoviticIllite
+53:ParagoniticIllite
+54:PhengiticIllite
+55:Aspectral
+56:NotInLibrary
+57:Dark
+58:Noisy
+59:HighError
+60:MaskedOff
+
+[class 3]
+name = S_VNIR_TSA704 Groups
+max = 8
+colours = 12419145 16711680 1859688 4608630 4025421 4420368 11513770 8947848
+0:MISC-SILICATE
+1:CARBONATE
+2:SULPHATE
+3:OXIDE
+4:SULPHIDE
+5:CLAY-CU
+6:NOTAROK
+7:INVALID
+
+[class 4]
+name = HyLogDiag
+max = 2
+colours = 16777215 13631696
+0:good
+1:to
+
+[class 5]
+name = Domain
+max = 1
+colours = 16777215
+0:Default
+
+[class 6]
+name = S_SWIR_TSA705 Groups
+max = 17
+colours = 15126526 255 65535 9939396 12450815 65280 5258088 16711935 7323035 6946848 16776960 7691705 16711680 1859688 2395320 11513770 8947848
+0:SILICA
+1:KAOLIN
+2:WHITE-MICA
+3:SMECTITE
+4:OTHER-ALOH
+5:CHLORITE
+6:DARK-MICA
+7:AMPHIBOLE
+8:SERPENTINE
+9:OTHER-MGOH
+10:EPIDOTE
+11:TOURMALINE
+12:CARBONATE
+13:SULPHATE
+14:PAL-SEP
+15:NOTAROK
+16:INVALID
+
+[class 7]
+name = S_VNIR_TSA704 Minerals
+max = 21
+colours = 12426883 12419145 16711680 1859688 6186102 4608630 5532764 5139544 4746324 4353104 4025421 4420368 11513772 11513771 11513770 8947848 8947848 8947848 8947848 8947848 8947848
+0:Chrysocolla
+1:Lazurite
+2:Malachite
+3:Jarosite
+4:Goethite
+5:Hematite
+6:Bornite
+7:Chalcopyrite
+8:Chalcopyrite-Oxidised
+9:Pyrite
+10:Sphalerite
+11:Clay-Cu
+12:Vegetation-Green
+13:GalvanisedIron
+14:ODZincalume
+15:Aspectral
+16:NotInLibrary
+17:Dark
+18:Noisy
+19:HighError
+20:MaskedOff
+
+[class 8]
+name = HoleID
+max = 1
+colours = 65335
+0:swmb007s_chips
+
+[class 9]
+name = RockMarks
+max = 0
+
+[class 10]
+name = U_SWIR_TSA705 Groups
+max = 17
+colours = 15126526 255 65535 9939396 12450815 65280 5258088 16711935 7323035 6946848 16776960 7691705 16711680 1859688 2395320 11513770 8947848
+0:SILICA
+1:KAOLIN
+2:WHITE-MICA
+3:SMECTITE
+4:OTHER-ALOH
+5:CHLORITE
+6:DARK-MICA
+7:AMPHIBOLE
+8:SERPENTINE
+9:OTHER-MGOH
+10:EPIDOTE
+11:TOURMALINE
+12:CARBONATE
+13:SULPHATE
+14:PAL-SEP
+15:NOTAROK
+16:INVALID
+
+[tsasettings 0]
+items_full =60
+items_sub =12
+trainsel =0
+seven =1
+illite =3
+domained =0
+plus =1
+tsavers =705
+params = 0.0900000000000000 1.0000000000000000 30.0000000000000000 4.0000000000000000 0.5000000000000000 0.0400000000000000 1.2749999999999999 0.4500000000000000 1000.0000000000000000 1.0000000000000000 1.2749999999999999 0.1500000000000000 60.0000000000000000 1.0000000000000000 0.0100000000000000 0.0000000000000000 20.0000000000000000 1.0000000000000000
+mixmask = 119 224 0 0 0 28 0 5 50 95 124 248 248 124 31 251 255 191 253 255 247 255 239 255 239 255 247 255 253 255 255 191 255 243 255 255 31 255 248 127 255 224 255 255 192 255 255 192 127 255 224 31 255 255 251 255 255 255 191 255 255 253 255 255 255 247 255 255 255 207 255 255 255 143 255 255 255 135 255 255 255 253 255 255 255 255 191 255 255 255 251 255 255 255 255 223 255 255 255 254 127 255 255 255 254 255 255 255 255 252 255 255 255 255 252 127 255 255 255 255 223 255 255 255 255 243 255 255 255 255 254 63 255 255 255 255 225 255 255 255 255 255 7 255 255 255 255 255 239 255 255 255 255 255 207 255 255 255 255 255 199 255 255 255 255 255 253 255 255 255 255 255 255 191 255 255 255 255 255 251 255 255 255 255 255 255 223 255 255 255 255 255 254 127 255 255 255 255 255 248 255 255 255 255 255 255 240 255 255 255 255 255 255 240 127 255 255 255 255 255 248 31 255 255 255 255 255 254 3 255 255 255 255 255 255 192 0
+
+[tsasettings 1]
+items_full =17
+items_sub =6
+trainsel =0
+seven =0
+illite =0
+domained =0
+plus =0
+tsavers =704
+params = 0.9000000000000000 0.9900000000000000 30.0000000000000000 4.0000000000000000 0.5000000000000000 0.0400000000000000 3.0000000000000000 55.0000000000000000 500.0000000000000000 1.0000000000000000 3.0000000000000000 0.2000000000000000 4.0000000000000000 20.0000000000000000
+mixmask = 14 3 173 192 0 48 0 0 0 0 0 0 0 0 0 63 255 127 255 127 255 128
+
+[sclrsets]
+0,S_SWIR_TSA705
+0,S_VNIR_TSA704
+0,U_SWIR_TSA705
+
+[domain 0]
+name = Default
+samp0 = 0
+samp1 = 29
+colour = 16777215
+tsamin =  0 705 56 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 52 53 54 55 57 58 59
+tsamin =  1 704 6 4 5 6 14 15 16
+tsamin =  2 708 77 21 22 23 29 30 31 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 49 50 51 52 53 57 58 62 63 78 79 80 89 90 91 94 95 98 99 100 102 103 104 105 106 107 108 109 110 116 117 118 119 120 121 122 123 133 134 135 136 137 138 139 149 151 152 153 154 158 161 162 165 168 169 176
+
+[events]
+0000001F	2022-07-29 19:29:43	TSG (trial) 8.0.7.4 (Trial licence)	SYSTEM	Created, dataset version 7.270000
+0000001F	2018-12-13 14:06:55	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Created, dataset version 7.260000
+1000009E	2018-12-13 14:06:56	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Import method: HyLogging SDF,  output: dataset pair,  scan date: 2018-12-11 13:40:09
+10008015	2018-12-13 14:06:57	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	SWIR TSA version 705
+10008015	2018-12-13 14:06:57	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	VNIR TSA version 704
+10001096	2018-12-13 14:06:58	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Import-time scalar creation: sec_end_mask
+10001096	2018-12-13 14:06:58	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Import-time scalar creation: Kahuna
+10001096	2018-12-13 14:06:58	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Import-time scalar creation: virtual_section
+10001096	2018-12-13 14:06:58	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Import-time scalar creation: RelRange
+00001416	2018-12-13 14:07:14	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Copy-processing created scalar Albedo
+00001416	2018-12-13 14:07:14	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Copy-processing created scalar recovery_rate
+00004403	2018-12-13 14:07:14	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Copied default layout and 2 numbered layout files from another dataset
+0008121C	2018-12-13 15:45:48	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Final_mask scalar established as Final mask
+00081306	2018-12-13 15:46:08	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Interactive edit of final-mask scalar 'Final mask'
+01004004	2018-12-13 15:47:08	The Spectral Geologist  8.0.3.2 3XFRM-S7KJB-X3WDZ-UWXSX-3BY64-Q	mimwawr	Saved layout 1 (start)
+0000B10A	2019-01-22 10:16:09	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	User SWIR TSAPlus recalc, version 705
+00001416	2019-01-22 10:17:17	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	Copy-processing created scalar colour tot_sat
+00001416	2019-01-22 10:17:17	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	Copy-processing created scalar Albedo (2)
+00001416	2019-01-22 10:17:17	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	Copy-processing created scalar Ferrous iron abundance
+00001416	2019-01-22 10:17:17	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	Copy-processing created scalar Hematite-goethite_distr
+00001416	2019-01-22 10:17:17	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	Copy-processing created scalar Ferric oxide abundance 25062014
+00001416	2019-01-22 10:17:17	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	Copy-processing created scalar 1730 nm
+0000B10A	2019-01-22 10:20:09	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	User SWIR TSAPlus recalc, version 705
+00000000	2019-01-30 12:04:20	The Spectral Geologist  8.0.3.2 QGA9K-Q3JN9-ELWBN-23PL4-MS8FU-W	mirsgeh	Database upload Started.  Creating new database record.
+1000004F	2020-10-12 15:29:54	The Spectral Geologist  8.0.7.4 KJAEU-TTUMG-7FYFB-GQ9EK-B3YZ8-W	MIMWAWR	Dataset version updated from 7.260000 to 7.270000
+00004403	2020-10-12 15:29:56	The Spectral Geologist  8.0.7.4 KJAEU-TTUMG-7FYFB-GQ9EK-B3YZ8-W	MIMWAWR	Copied default layout from another dataset
+10008409	2021-02-17 07:23:51	The Spectral Geologist  8.0.7.4 KJAEU-TTUMG-7FYFB-GQ9EK-B3YZ8-W	MIMWAWR	User SWIR TSA settings copied from Core
+10008409	2021-02-17 07:23:51	The Spectral Geologist  8.0.7.4 KJAEU-TTUMG-7FYFB-GQ9EK-B3YZ8-W	MIMWAWR	User VNIR TSA settings copied from Core
+0000B10A	2021-06-22 15:48:51	The Spectral Geologist  8.0.7.4 KJAEU-TTUMG-7FYFB-GQ9EK-B3YZ8-W	mimwawr	User SWIR TSAPlus recalc, version 705
+00004403	2021-07-15 11:37:07	The Spectral Geologist  8.0.7.4 LP44D-DHP9T-F9Y3L-C56KR-EXMDW-X	mimwawr	Copied default layout from another dataset
+00000000	2022-06-12 19:39:08	The Spectral Geologist  8.0.7.4 LDJ2T-KXWEB-R5YQZ-FTAT9-9BYT9-X	mimwawr	Database upload Started.  Updating existing database record.
+00000000	2022-06-12 19:39:08	The Spectral Geologist  8.0.7.4 LDJ2T-KXWEB-R5YQZ-FTAT9-9BYT9-X	mimwawr	Database upload Failed.
+00000000	2022-07-15 12:26:39	The Spectral Geologist  8.0.7.4 LDJ2T-KXWEB-R5YQZ-FTAT9-9BYT9-X	mimwawr	Database upload Started.  Updating existing database record.
+00000000	2022-07-29 19:29:56	TSG (trial) 8.0.7.4 (Trial licence)	SYSTEM	Database download completed successfully.
+
+[wavelength specs]
+380.000000 2500.000000 nm
+
+[batch]
+tsg specialist scalar command set
+commands = 5
+name = Hematite-goethite_distr,9
+category = user
+uuid = 07429af0-ddf2-4157-8bef-af8cf894c40
+P1 = profile, stat=DEPTH, wcentre=913.00, wradius=137.00, layer=REF, smooth=NONE, fit=THREE, bkrem=DIV, minrad=0.000000
+P2 = profile, stat=MEAN, wcentre=1650.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P3 = profile, stat=MEAN, wcentre=450.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P4 = expr, param1=P3, param2=P2, arithop=DIV, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P5 = expr, param1=P4, const2=1.00000000000000000000, arithop=LLE, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=OUT
+P6 = expr, param1=P5, param2=P1, arithop=MULT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P7 = expr, param1=P6, const2=0.02500000037252903000, arithop=LGT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=OUT
+P8 = pfit, layer=REF, wunits=NANOMETRES, inflex=NO, peaks=NO, wmin=776.000000, wmax=1050.000000, fwmin=776.000000, fwmax=1050.000000, product=WVL, root=AUTO, bktype=HULL, bksub=DIV, order=4, maxrmse=0.000000, minval=0.000000, minarea=0.000000, maxbkslope=0.000000
+return = expr, param1=P8, param2=P7, arithop=MULT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+name = Ferrous iron abundance,7
+category = user
+uuid = c160a465-25aa-4aaa-9aae-05fa527b08c
+P1 = profile, stat=DEPTH, wcentre=920.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P2 = profile, stat=MEAN, wcentre=1650.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P3 = profile, stat=MEAN, wcentre=1020.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P4 = profile, stat=MEAN, wcentre=1235.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P5 = expr, param1=P1, param2=P2, arithop=ADD, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P6 = expr, param1=P3, param2=P4, arithop=ADD, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+return = expr, param1=P5, param2=P6, arithop=DIV, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+name = Kahuna,15
+description = Compound good-pixels mask.   Knocks out:  >77% albedo, TSA_S artifact group, section start and end, profilometer < 12 mm.
+version = 2.1
+category = user
+uuid = 58122D30-C13C-4039-9FFA-9F7089B3A325
+seealso = 06D36E7C-EB8C-455B-A504-1BF08F47502F
+author = CSIRO MMTG
+P1 = import, system=TSA, tsadbix=SWIR, tsaitem=GROUP, tsamix=1
+P2 = import, system=TSA, tsadbix=SWIR, tsaitem=GROUP, tsamix=2
+P3 = import, type=CORE, coretype=SEMASK
+P4 = import, name="prof_min", isclass=NO
+P5 = profile, stat=MEAN, wcentre=1450.00, wradius=1000.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P6 = expr, param1=P5, const2=0.00000000000000000000, arithop=LGE, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P7 = expr, param1=P5, const2=0.76999998092651367000, arithop=LLE, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P8 = expr, param1=P1, class2="notarok", arithop=LEQ, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P9 = expr, param1=P2, class2="notarok", arithop=LEQ, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P10 = expr, param1=P4, const2=12.00000000000000000000, arithop=LLT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P11 = expr, param1=P6, param2=P7, arithop=LAND, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P12 = expr, param1=P8, param2=P9, arithop=LAND, mod1=UNSET, mod2=UNSET, mainmod=PLAIN, nullhandling=NONE
+P13 = expr, param1=P11, param2=P12, arithop=LAND, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P14 = expr, param1=P10, param2=P13, arithop=LAND, mod1=UNSET, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+return = expr, param1=P14, param2=P3, arithop=LAND, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+name = Albedo,7
+description = Reflectance albedo over 450-2450 nm with basic channel outlier masking
+version = 1.0
+category = obsolete
+uuid = b9817252-5267-47ea-94d2-754e36c5c264
+replacedby = 9871C687-F06A-4DD6-87DA-2E2AF38A002F
+author = CSIRO MMTG
+P1 = profile, stat=MIN, wcentre=1450.00, wradius=1000.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P2 = profile, stat=MAX, wcentre=1450.00, wradius=1000.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P3 = expr, param1=P1, const2=0.05000000074505806000, arithop=LGE, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P4 = expr, param1=P2, const2=1.00000000000000000000, arithop=LLE, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P5 = expr, param1=P3, param2=P4, arithop=LAND, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=OUT
+P6 = profile, stat=MEAN, wcentre=1450.00, wradius=1000.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+return = expr, param1=P5, param2=P6, arithop=MULT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+name = Ferric oxide abundance 25062014,13
+category = user
+uuid = 2891b8f0-79e7-4d78-b03e-dd2bdeb860d
+date = Wed Jun 25 10:04:07 2014
+P1 = profile, stat=DEPTH, wcentre=913.00, wradius=137.00, layer=REF, smooth=NONE, fit=THREE, bkrem=DIV, minrad=0.000000
+P2 = profile, stat=MEAN, wcentre=1650.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P3 = profile, stat=MEAN, wcentre=450.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P4 = expr, param1=P3, param2=P2, arithop=DIV, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P5 = expr, param1=P4, const2=1.00000000000000000000, arithop=LLE, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=OUT
+P6 = expr, param1=P5, param2=P1, arithop=MULT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P7 = profile, stat=DEPTH, wcentre=650.00, wradius=50.00, layer=REF, smooth=NONE, fit=THREE, bkrem=DIV, minrad=0.000000
+P8 = expr, param1=P7, param2=P6, arithop=MULT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P9 = profile, stat=MEAN, wcentre=900.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P10 = profile, stat=MEAN, wcentre=500.00, wradius=0.00, layer=REF, smooth=NONE, fit=NONE, bkrem=NONE, minrad=0.000000
+P11 = expr, param1=P10, param2=P9, arithop=DIV, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+P12 = expr, param1=P11, const2=1.00000000000000000000, arithop=LLE, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=OUT
+return = expr, param1=P12, param2=P8, arithop=MULT, mod1=PLAIN, mod2=PLAIN, mainmod=PLAIN, nullhandling=NONE
+
