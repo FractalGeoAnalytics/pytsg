@@ -17,7 +17,7 @@ from pytsg import parse_tsg
 # -------------
 # Define some data directories and plot data read from each of them.
 
-dir_data_root = '../data'
+dir_data_root = '../example_data'
 data_dirs: List[Path] = [path for path in Path(dir_data_root).iterdir() if path.is_dir()]
 
 for data_dir in data_dirs:

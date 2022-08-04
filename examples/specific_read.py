@@ -16,7 +16,7 @@ from pytsg.parse_tsg import Spectra, Cras
 # Extract data using the appropriate methods.
 
 
-dir_demo_1: Path = Path(r'../data/SWMB007s')
+dir_demo_1: Path = Path(r'../example_data/SWMB007s')
 
 for fp in dir_demo_1.iterdir():
     print(fp.name)

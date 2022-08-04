@@ -26,10 +26,11 @@ If using the top level importer the data is assumed to follow this structure
 ```python
 from matplotlib import pyplot as plt
 from pytsg import parse_tsg
-data = parse_tsg.read_package('/data/ETG0187')
 
-plt.plot(data.nir.wavelength, data.nir.spectra[0,0:10,:].T)
-plt.plot(data.tir.wavelength, data.tir.spectra[0,0:10,:].T)
+data = parse_tsg.read_package('example_data/ETG0187')
+
+plt.plot(data.nir.wavelength, data.nir.spectra[0, 0:10, :].T)
+plt.plot(data.tir.wavelength, data.tir.spectra[0, 0:10, :].T)
 plt.xlabel('Wavelength nm')
 plt.ylabel('Reflectance')
 plt.title('pytsg reads tsg files')
