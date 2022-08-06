@@ -50,7 +50,7 @@ tir = parse_tsg.read_tsg_bip_pair('ETG0187_tsg_tir.tsg','ETG0187_tsg_tir.bip','t
 cras = parse_tsg.read_cras('ETG0187_tsg_cras.bip')
 
 # hires dat file
-lidar = parse_tsg.read_cras('ETG0187_tsg_hires.dat')
+lidar = parse_tsg.read_lidar('ETG0187_tsg_hires.dat')
 
 
 ```

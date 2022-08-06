@@ -6,7 +6,7 @@ import re
 import struct
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, NamedTuple, Union
+from typing import Any, NamedTuple, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -67,7 +67,7 @@ class Spectra:
     wavelength: NDArray
     bandheaders: "list[str]"
     sampleheaders: pd.DataFrame
-
+    classes:"list[[dict[str, Any]]]"
 
 @dataclass
 class TSG:
@@ -324,6 +324,26 @@ def _parse_sample_header(
 
     return final
 
+def _parse_class_section(section_list: "list[str]") -> "Tuple[dict[str, str]]":
+    """
+    name = S_jCLST_707 Groups
+    max = 2
+    colours = 15126526 30960
+    0:SILICA
+    1:K-FELDSPAR
+    """
+    class_names:dict[str,str] = {}
+    class_info:dict[str,str]  = {}
+    for i in section_list:
+        # lines of the section containing = form the class name
+        if i.find('=')>=0:
+            tmp_name = _parse_kvp(i,'=')
+            class_names.update(tmp_name )
+        elif i.find(':')>=0:    
+            tmp_info = _parse_kvp(i, ':')
+            class_info.update(tmp_info)
+
+    return class_names, class_info
 
 def _parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
 
@@ -432,6 +452,14 @@ def _parse_tsg(
         elif k == "band headers":
             tmp_header = _parse_section(fstr[start:end], ":")
             d_info.update({k: tmp_header})
+        elif k.find('class') == 0:
+            tmp_header,tmp_info = _parse_class_section(fstr[start:end])
+            tmp_class = {k: (tmp_header,tmp_info)}
+            if 'class' in d_info.keys():
+                d_info['class'].update(tmp_class)
+            else:
+                d_info.update({'class': tmp_class})
+
         else:
             tmp_out: dict[str, str] = {}
             for i in fstr[start:end]:
@@ -450,7 +478,7 @@ def read_tsg_bip_pair(tsg_file: Union[Path, str], bip_file: Union[Path, str], sp
     spectra = _read_bip(bip_file, info["coordinates"])
     wavelength = _calculate_wavelengths(info["wavelength specs"], info["coordinates"])
     package = Spectra(
-        spectrum, spectra, wavelength, info["band headers"], info["sample headers"]
+        spectrum, spectra, wavelength, info["band headers"], info["sample headers"],info['class']
     )
 
     return package
@@ -529,6 +557,6 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> 
 
 if __name__ == "main":
     foldername = "data/RC_hyperspectral_geochem"
-    results = read_package(foldername,read_cras=False)
+    results = read_package(foldername)
     pd.DataFrame(results.cras.section)
     
