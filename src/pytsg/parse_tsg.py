@@ -547,7 +547,7 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> 
     cras: Cras
 
     if file_pairs.valid_nir():
-        nir = read_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "nir")
+        nir = read_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
     else:
         nir = Spectra
 
