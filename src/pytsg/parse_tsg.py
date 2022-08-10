@@ -101,7 +101,7 @@ class FilePairs:
             names_match = False
 
         if has_bip and has_tsg and names_match:
-            pairs = (self.tir_tsg, self.tir_bip)
+            pairs = (tsgfile, bipfile)
         else:
             pairs = None
         return pairs
