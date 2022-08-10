@@ -67,48 +67,49 @@ class Spectra:
     wavelength: NDArray
     bandheaders: "list[str]"
     sampleheaders: pd.DataFrame
-    classes:"list[[dict[str, Any]]]"
+    classes: "list[[dict[str, Any]]]"
+
 
 @dataclass
 class TSG:
     nir: Spectra
     tir: Spectra
     cras: Cras
-    lidar: Union[NDArray,None]
+    lidar: Union[NDArray, None]
 
 
 class FilePairs:
     """Class for keeping track of an item in inventory."""
 
-    nir_tsg: Union[Path,None] = None
-    nir_bip: Union[Path,None] = None
-    tir_tsg: Union[Path,None] = None
-    tir_bip: Union[Path,None] = None
-    lidar: Union[Path,None] = None
-    cras: Union[Path,None] = None
+    nir_tsg: Union[Path, None] = None
+    nir_bip: Union[Path, None] = None
+    tir_tsg: Union[Path, None] = None
+    tir_bip: Union[Path, None] = None
+    lidar: Union[Path, None] = None
+    cras: Union[Path, None] = None
 
-    def _get_nir(self) -> "Union[tuple[Path,Path], None]":
-        has_tsg: bool = isinstance(self.nir_tsg, Path)
-        has_bip: bool = isinstance(self.nir_bip, Path)
-        names_match: bool = self.nir_bip.stem == self.nir_tsg.stem
-        if has_bip and has_tsg and names_match:
-            pairs = (self.nir_tsg, self.nir_bip)
+    def _get_bip_tsg_pair(self, spectrum: str):
+        tsgfile: Union[Path, None] = getattr(self, f"{spectrum}_tsg")
+        bipfile: Union[Path, None] = getattr(self, f"{spectrum}_bip")
+
+        has_tsg: bool = isinstance(tsgfile, Path)
+        has_bip: bool = isinstance(bipfile, Path)
+        names_match: bool
+        if has_tsg and has_bip:
+            names_match = bipfile.stem == tsgfile.stem
         else:
-            pairs = None
-        return pairs
+            names_match = False
 
-    def _get_tir(self) -> "Union[tuple[Path,Path], None]":
-        has_tsg: bool = isinstance(self.nir_tsg, Path)
-        has_bip: bool = isinstance(self.nir_bip, Path)
-        names_match: bool = self.nir_bip.stem == self.nir_tsg.stem
         if has_bip and has_tsg and names_match:
-            pairs = (self.nir_tsg, self.nir_bip)
+            pairs = (self.tir_tsg, self.tir_bip)
         else:
             pairs = None
         return pairs
 
     def _get_lidar(self) -> Union[Path, None]:
-        has_lidar: bool = ('lidar' in self.__dict__.keys()) and (isinstance(self.lidar, Path))
+        has_lidar: bool = ("lidar" in self.__dict__.keys()) and (
+            isinstance(self.lidar, Path)
+        )
         if has_lidar:
             pairs = self.lidar
         else:
@@ -124,7 +125,7 @@ class FilePairs:
         return pairs
 
     def valid_nir(self) -> bool:
-        result = self._get_nir()
+        result = self._get_bip_tsg_pair("nir")
         if result is None:
             valid = False
         else:
@@ -132,7 +133,7 @@ class FilePairs:
         return valid
 
     def valid_tir(self) -> bool:
-        result = self._get_tir()
+        result = self._get_bip_tsg_pair("tir")
         if result is None:
             valid = False
         else:
@@ -157,7 +158,7 @@ class FilePairs:
 
 
 def read_cras(filename: Union[str, Path]) -> Cras:
-    """ Read a cras file
+    """Read a cras file
 
     Args:
         filename: filename to read
@@ -241,7 +242,7 @@ def read_cras(filename: Union[str, Path]) -> Cras:
 
 
 def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
-    """ Reads the files with the .tsg extension which are almost a toml file
+    """Reads the files with the .tsg extension which are almost a toml file
     but not quite so the standard parser doesn't work
 
     Quite simply this function reads the file and strips the newlines at the end
@@ -258,7 +259,7 @@ def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
 
 
 def _find_header_sections(tsg_str: "list[str]"):
-    """ Finds the header sections of the .tsg file
+    """Finds the header sections of the .tsg file
     header sections are defined as strings between square brackets
     """
     re_strip: re.Pattern = re.compile("^\\[[a-zA-Z0-9 ]+\\]")
@@ -324,6 +325,7 @@ def _parse_sample_header(
 
     return final
 
+
 def _parse_class_section(section_list: "list[str]") -> "Tuple[dict[str, str]]":
     """
     name = S_jCLST_707 Groups
@@ -332,18 +334,19 @@ def _parse_class_section(section_list: "list[str]") -> "Tuple[dict[str, str]]":
     0:SILICA
     1:K-FELDSPAR
     """
-    class_names:dict[str,str] = {}
-    class_info:dict[str,str]  = {}
+    class_names: dict[str, str] = {}
+    class_info: dict[str, str] = {}
     for i in section_list:
         # lines of the section containing = form the class name
-        if i.find('=')>=0:
-            tmp_name = _parse_kvp(i,'=')
-            class_names.update(tmp_name )
-        elif i.find(':')>=0:    
-            tmp_info = _parse_kvp(i, ':')
+        if i.find("=") >= 0:
+            tmp_name = _parse_kvp(i, "=")
+            class_names.update(tmp_name)
+        elif i.find(":") >= 0:
+            tmp_info = _parse_kvp(i, ":")
             class_info.update(tmp_info)
 
     return class_names, class_info
+
 
 def _parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
 
@@ -357,7 +360,7 @@ def _parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
 
 
 def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
-    """ Parses strings into Key value pairs
+    """Parses strings into Key value pairs
     control over the split value is to manage the different seperators used
     in different sections of the file
 
@@ -381,8 +384,10 @@ def _parse_kvp(line: str, split: str = "=") -> "dict[str, str]":
     return kvp
 
 
-def _read_bip(filename: Union[str, Path], coordinates: "dict[str, str]") -> NDArray[np.float32]:
-    """ Reads the .bip file as a 1d array then reshapes it according to the dimensions
+def _read_bip(
+    filename: Union[str, Path], coordinates: "dict[str, str]"
+) -> NDArray[np.float32]:
+    """Reads the .bip file as a 1d array then reshapes it according to the dimensions
     as supplied in the coordinates dict
 
     Args:
@@ -417,7 +422,7 @@ def _calculate_wavelengths(
 
 
 def read_hires_dat(filename: Union[str, Path]) -> NDArray:
-    """ Read the *hires.dat* file which contains the lidar scan
+    """Read the *hires.dat* file which contains the lidar scan
     of the material
 
     Args:
@@ -452,13 +457,13 @@ def _parse_tsg(
         elif k == "band headers":
             tmp_header = _parse_section(fstr[start:end], ":")
             d_info.update({k: tmp_header})
-        elif k.find('class') == 0:
-            tmp_header,tmp_info = _parse_class_section(fstr[start:end])
-            tmp_class = {k: (tmp_header,tmp_info)}
-            if 'class' in d_info.keys():
-                d_info['class'].update(tmp_class)
+        elif k.find("class") == 0:
+            tmp_header, tmp_info = _parse_class_section(fstr[start:end])
+            tmp_class = {k: (tmp_header, tmp_info)}
+            if "class" in d_info.keys():
+                d_info["class"].update(tmp_class)
             else:
-                d_info.update({'class': tmp_class})
+                d_info.update({"class": tmp_class})
 
         else:
             tmp_out: dict[str, str] = {}
@@ -471,14 +476,21 @@ def _parse_tsg(
     return d_info
 
 
-def read_tsg_bip_pair(tsg_file: Union[Path, str], bip_file: Union[Path, str], spectrum: str) -> Spectra:
+def read_tsg_bip_pair(
+    tsg_file: Union[Path, str], bip_file: Union[Path, str], spectrum: str
+) -> Spectra:
     fstr = _read_tsg_file(tsg_file)
     headers = _find_header_sections(fstr)
     info = _parse_tsg(fstr, headers)
     spectra = _read_bip(bip_file, info["coordinates"])
     wavelength = _calculate_wavelengths(info["wavelength specs"], info["coordinates"])
     package = Spectra(
-        spectrum, spectra, wavelength, info["band headers"], info["sample headers"],info['class']
+        spectrum,
+        spectra,
+        wavelength,
+        info["band headers"],
+        info["sample headers"],
+        info["class"],
     )
 
     return package
@@ -490,7 +502,7 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> 
         foldername = Path(foldername)
 
     if not foldername.exists():
-        raise FileNotFoundError('The directory does not exist.')
+        raise FileNotFoundError("The directory does not exist.")
 
     # we are parsing the folder structure here and checking that
     # pairs of files exist in this case we are making sure
@@ -535,7 +547,7 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> 
     cras: Cras
 
     if file_pairs.valid_nir():
-        nir = read_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
+        nir = read_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "nir")
     else:
         nir = Spectra
 
@@ -552,11 +564,10 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> 
     else:
         cras = Cras
 
-    return TSG(nir, tir,  cras,lidar)
+    return TSG(nir, tir, cras, lidar)
 
 
 if __name__ == "main":
     foldername = "data/RC_hyperspectral_geochem"
     results = read_package(foldername)
     pd.DataFrame(results.cras.section)
-    
