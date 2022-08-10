@@ -67,7 +67,7 @@ class Spectra:
     wavelength: NDArray
     bandheaders: "list[str]"
     sampleheaders: pd.DataFrame
-    classes: "list[[dict[str, Any]]]"
+    classes: "list[dict[str, Any]]"
 
 
 @dataclass
