@@ -15,6 +15,22 @@ from numpy.typing import NDArray
 from PIL import Image
 
 
+class ClassHeaders(NamedTuple):
+    class_number: int
+    name: str
+    max: int
+    classes: "dict[int, str]"
+
+    def map_ints(self, index: NDArray)->"list[str]":
+        outindex: list[str] = []
+        for i in index:
+            if i >= 0:
+                outindex.append(self.classes[i])
+            else:
+                outindex.append("")
+        return outindex
+
+
 class CrasHeader(NamedTuple):
     id: str  # starts with "CoreLog Linescan ".   If it starts with "CoreLog Linescan 1." then it supports compression (otherwise ignore ctype).
     ns: int  # image width in pixels
@@ -53,6 +69,13 @@ class SectionInfo(NamedTuple):
     nlines: int  # number of image lines in this section
 
 
+class BandHeaders(NamedTuple):
+    band: int
+    name: str
+    class_number: int
+    flag: int  # I'm not sure what this does but 2 indicates that it is a mappable class
+
+
 @dataclass
 class Cras:
     image: NDArray
@@ -65,9 +88,10 @@ class Spectra:
     spectrum_name: str
     spectra: NDArray
     wavelength: NDArray
-    bandheaders: "list[str]"
     sampleheaders: pd.DataFrame
     classes: "list[dict[str, Any]]"
+    bandheaders: "list[BandHeaders]"
+    scalars: pd.DataFrame
 
 
 @dataclass
@@ -76,6 +100,10 @@ class TSG:
     tir: Spectra
     cras: Cras
     lidar: Union[NDArray, None]
+
+    def __repr__(self) -> str:
+        tsg_info: str = "This is a TSG file"
+        return tsg_info
 
 
 class FilePairs:
@@ -326,7 +354,7 @@ def _parse_sample_header(
     return final
 
 
-def _parse_class_section(section_list: "list[str]") -> "Tuple[dict[str, str]]":
+def _parse_class_section(section_list: "list[str]", classnumber: int) -> ClassHeaders:
     """
     name = S_jCLST_707 Groups
     max = 2
@@ -335,17 +363,22 @@ def _parse_class_section(section_list: "list[str]") -> "Tuple[dict[str, str]]":
     1:K-FELDSPAR
     """
     class_names: dict[str, str] = {}
-    class_info: dict[str, str] = {}
+    class_info: dict[int, str] = {}
+    c_name: str
+    c_value: str
     for i in section_list:
         # lines of the section containing = form the class name
         if i.find("=") >= 0:
-            tmp_name = _parse_kvp(i, "=")
-            class_names.update(tmp_name)
+            split_i = i.split("=")
+            c_name = split_i[0].strip()
+            c_value = split_i[1].strip()
+            class_names.update({c_name: c_value})
         elif i.find(":") >= 0:
-            tmp_info = _parse_kvp(i, ":")
-            class_info.update(tmp_info)
-
-    return class_names, class_info
+            split_i = i.split(":")
+            class_info.update({int(split_i[0]): split_i[1]})
+    max_class: int = int(class_names["max"])
+    class_header = ClassHeaders(classnumber, class_names["name"], max_class, class_info)
+    return class_header
 
 
 def _parse_wavelength_specs(line: str) -> "dict[str, Union[float,str]]":
@@ -437,6 +470,35 @@ def read_hires_dat(filename: Union[str, Path]) -> NDArray:
     return lidar
 
 
+def _parse_bandheaders(bandheaders: "list[str]") -> "list[BandHeaders]":
+    split_header = "list[str]"
+    band: int
+    info: str
+    split_info: "list[str]"
+    name: str
+    class_name: int
+    flag: int
+    out: list[BandHeaders] = []
+    for bh in bandheaders:
+        split_header = bh.split(":")
+        band = int(split_header[0])  # first item is the band number
+        info = split_header[1]  # the second item is all the information
+        split_info = info.split(";")
+        name = split_info[0]
+        if len(split_info) > 1:
+            flag = int(split_info[3])
+            if flag <= 2:
+                class_name = int(split_info[4])
+            else:
+                class_name = float(split_info[4])
+
+        else:
+            class_name = -1
+            flag = -1
+        out.append(BandHeaders(band, name, class_name, flag))
+    return out
+
+
 def _parse_tsg(
     fstr: "list[str]", headers: "dict[str, tuple[int,int]]"
 ) -> "dict[str, Any]":
@@ -455,11 +517,13 @@ def _parse_tsg(
             tmp_wave = _parse_wavelength_specs(fstr[start:end][0])
             d_info.update({k: tmp_wave})
         elif k == "band headers":
-            tmp_header = _parse_section(fstr[start:end], ":")
-            d_info.update({k: tmp_header})
+            header = _parse_bandheaders(fstr[start:end])
+            d_info.update({k: header})
         elif k.find("class") == 0:
-            tmp_header, tmp_info = _parse_class_section(fstr[start:end])
-            tmp_class = {k: (tmp_header, tmp_info)}
+            class_number: int = int(k.split(" ")[1])  # this will be an int
+            class_info = _parse_class_section(fstr[start:end], class_number)
+            tmp_class = {class_number: class_info}
+
             if "class" in d_info.keys():
                 d_info["class"].update(tmp_class)
             else:
@@ -476,6 +540,28 @@ def _parse_tsg(
     return d_info
 
 
+def _parse_scalars(
+    scalars: NDArray, classes: "list[ClassHeaders]", bandheaders: "list[BandHeaders]"
+) -> pd.DataFrame:
+
+    """
+    function to map the scalars to a pandas data frame with names and 
+    mapped values
+    """
+    tmp_series:list[pd.DataFrame] = []
+    for i in bandheaders:
+        band_value = scalars[:, i.band]
+        if (i.class_number > 0) and (i.flag == 2):
+            bv = band_value.astype(int)
+            tn = classes[i.class_number].map_ints(bv)
+            tmp_series.append(pd.DataFrame(tn, columns=[i.name]))
+        else:
+            tmp_series.append(pd.DataFrame(band_value, columns=[i.name]))
+    output:pd.DataFrame = pd.concat(tmp_series, axis=1)
+
+    return output
+
+
 def read_tsg_bip_pair(
     tsg_file: Union[Path, str], bip_file: Union[Path, str], spectrum: str
 ) -> Spectra:
@@ -484,13 +570,16 @@ def read_tsg_bip_pair(
     info = _parse_tsg(fstr, headers)
     spectra = _read_bip(bip_file, info["coordinates"])
     wavelength = _calculate_wavelengths(info["wavelength specs"], info["coordinates"])
+    scalars = _parse_scalars(spectra[1, :, :],info['class'],info['band headers'])
+
     package = Spectra(
         spectrum,
-        spectra,
+        spectra[0, :, :],
         wavelength,
-        info["band headers"],
         info["sample headers"],
         info["class"],
+        info["band headers"],
+        scalars,
     )
 
     return package
