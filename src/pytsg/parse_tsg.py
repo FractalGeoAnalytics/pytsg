@@ -279,7 +279,7 @@ def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
     """
     lines: list[str] = []
     tmp_line: str
-    with open(filename) as file:
+    with open(filename,encoding='cp1252') as file:
         for line in file:
             tmp_line = line.rstrip()
             lines.append(tmp_line)
@@ -489,6 +489,9 @@ def _parse_bandheaders(bandheaders: "list[str]") -> "list[BandHeaders]":
             flag = int(split_info[3])
             if flag <= 2:
                 class_name = int(split_info[4])
+            elif flag == 13:
+                # flag 13 is when PLS scalars are used
+                class_name = split_info[4]
             else:
                 class_name = float(split_info[4])
 
@@ -551,10 +554,14 @@ def _parse_scalars(
     tmp_series:list[pd.DataFrame] = []
     for i in bandheaders:
         band_value = scalars[:, i.band]
-        if (i.class_number > 0) and (i.flag == 2):
-            bv = band_value.astype(int)
-            tn = classes[i.class_number].map_ints(bv)
-            tmp_series.append(pd.DataFrame(tn, columns=[i.name]))
+        #handle flag 13 that has a path to plsscalars
+        if i.flag == 2:
+            if (i.class_number > 0):
+                bv = band_value.astype(int)
+                tn = classes[i.class_number].map_ints(bv)
+                tmp_series.append(pd.DataFrame(tn, columns=[i.name]))
+            else:
+                tmp_series.append(pd.DataFrame(band_value, columns=[i.name]))
         else:
             tmp_series.append(pd.DataFrame(band_value, columns=[i.name]))
     output:pd.DataFrame = pd.concat(tmp_series, axis=1)
