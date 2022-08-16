@@ -240,7 +240,7 @@ def read_cras(filename: Union[str, Path]) -> Cras:
                 img = decode_jpeg(chunk, colorspace="BGR")
                 # reverse the channels
                 # and flip the image upsidedown
-                np_image = np.flipud(img, -1)
+                np_image = np.flipud(img)
                 nr = np_image.shape[0]
                 cras[curpos : (curpos + nr), :, :] = np_image
                 curpos = curpos + nr
