@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytsg"
-version = "0.2.1"
+version = "0.2.3"
 description = "Library to read .tsg file package"
 authors = ["Ben <ben@fractalgeoanalytics.com>"]
 license = "MIT"
@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8"
 numpy = "^1.23"
 pandas = "^1.4.3"
-Pillow = "^9.2.0"
+simplejpeg = "^1.6.5"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^22.6.0", allow-prereleases = true}

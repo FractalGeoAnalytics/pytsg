@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from numpy.core._exceptions import _ArrayMemoryError
 from numpy.typing import NDArray
-from PIL import Image
+from simplejpeg import decode_jpeg, encode_jpeg
 
 
 class ClassHeaders(NamedTuple):
@@ -21,7 +21,7 @@ class ClassHeaders(NamedTuple):
     max: int
     classes: "dict[int, str]"
 
-    def map_ints(self, index: NDArray)->"list[str]":
+    def map_ints(self, index: NDArray) -> "list[str]":
         outindex: list[str] = []
         for i in index:
             if i >= 0:
@@ -237,10 +237,10 @@ def read_cras(filename: Union[str, Path]) -> Cras:
                 chunksize_in_bytes = chunk_offset_array[i + 1] - chunk_offset_array[i]
                 file.seek(total_offset)
                 chunk = file.read(chunksize_in_bytes)
-                img = Image.open(io.BytesIO(chunk))
+                img = decode_jpeg(chunk, colorspace="BGR")
                 # reverse the channels
                 # and flip the image upsidedown
-                np_image = np.flipud(np.flip(np.array(img), -1))
+                np_image = np.flipud(img, -1)
                 nr = np_image.shape[0]
                 cras[curpos : (curpos + nr), :, :] = np_image
                 curpos = curpos + nr
@@ -269,6 +269,171 @@ def read_cras(filename: Union[str, Path]) -> Cras:
     return output
 
 
+def extract_chips(
+    filename: Union[str, Path], outfolder: Union[str, Path], spectra: Spectra
+):
+
+    if isinstance(outfolder, str):
+        outfolder = Path(outfolder)
+
+    if not outfolder.exists():
+        outfolder.mkdir()
+
+    section_info_format: str = "4f3i"
+    tray_info_format: str = "3f2i"
+    head_format: str = "20s2I8h4I2h"
+    file = open(filename, "rb")
+    # read the 64 byte header from the .cras file
+    bytes = file.read(64)
+    # create the header information
+    header = CrasHeader(*struct.unpack(head_format, bytes))
+
+    # Create the chunk_offset_array
+    # which determines which point of the file to enter to read the .jpg image
+
+    file.seek(64)
+    b = file.read(4 * (header.nchunks + 1))
+    chunk_offset_array = np.ndarray((header.nchunks + 1), np.uint32, b)
+
+    # check for the existance of sections or  trays
+    # if they exist we are going to skip ahead and import them first
+    # as we are going to use them to section the images to a per spectrum basis
+    # so the cras file uses compressed jpg chunks of approximately fixed dimension
+    # so we need to use the section and tray information to calculate the correct
+    # image size that matches the spectra
+    # we will set up an array that we will use to accumulate the images into
+    # then as each image is accumulated we dump it to disk and call name it the sample name
+    # it is likely that we need two accumulation arrays the first as a bin to hold the images
+    # as they are read to disk and the second to hold the image that we are going to export
+    if header.nsections > 0 or header.ntrays > 0:
+        # the tray info section if it exists should start after the last image
+        # the section info and if there is a tray info section then it should be after the tray info section
+        info_table_start = (
+            64
+            + (header.nchunks + 1) * 4
+            + chunk_offset_array[header.nchunks]
+            - chunk_offset_array[0]
+        )
+        file.seek(info_table_start)
+
+        tray: "list[TrayInfo]" = []
+        for i in range(header.ntrays):
+            bytes = file.read(20)
+            tray.append(TrayInfo(*struct.unpack(tray_info_format, bytes)))
+
+        section: "list[SectionInfo]" = []
+        for i in range(header.nsections):
+            bytes = file.read(28)
+            section.append(SectionInfo(*struct.unpack(section_info_format, bytes)))
+
+    # it seems to be best to allocate memory for each of the sections if there are multiple sections we
+    # empty the array and create a new one of the correct dimension
+    # on third thoughts we will precalculate which chunks are going to which section because we know that
+    # then loop over sets of chunks dumping to disk incrementally.
+    # at this stage I'm not sure it will work on drill core
+    # no the header contains the chunk dimensions
+    # loop over the section
+    # it seems that you need to have the sample header information from the
+    # nir/tir spectra we use nir because it should always be there
+    # once we have that information we are going to caculate the number of pixels required
+    # in the y direction that represent a single spectrum and the option will also be to dump
+    # all the spectra to disk named as H_SAMPLE in a subfolder which will take an impressive amount of space
+    # but such are the vagaries of ML
+    # I totally assume that these headers always exist in the scalars
+
+    section_array = (
+        spectra.sampleheaders["L"].astype(int).values - 1
+    )  # subtract 1 so that we are 0 indexed
+    sample_length = spectra.scalars["SecDist (mm)"].diff()
+    # this is only na for the first sample
+    idx_sample_na = (sample_length.isna()) | (sample_length < 0)
+    sample_length[idx_sample_na] = spectra.scalars["SecDist (mm)"][idx_sample_na]
+    # pd is slow for lots of accesses
+    sample_array: NDArray = sample_length.values
+    curchunk: int = 0
+    cursample: int = 0
+    processed_lines: int = 0
+    yres: float
+    working: NDArray[np.uint8]
+    curpos: int = 0
+    nr: int
+    pos_fill: NDArray[np.int32]
+    idx_bin_fill: NDArray[np.bool8]
+    leading_bin: NDArray[np.uint8] = np.zeros(
+        (header.chunksize, header.ns, header.nb), dtype="uint8"
+    )
+    total_offset: int
+    chunksize_in_bytes: int
+    np_image: NDArray[np.uint8]
+    end_pos: int
+    nextra: int
+    end_np: int
+    idx_section: NDArray[np.bool8]
+    cut_array: NDArray[np.int32]
+    n_cuts: int
+    tmp_file: str
+    for i, sec in enumerate(section):
+        # pixel resolution
+        yres = sec.utlengthmm / sec.nlines
+        # allocate the section
+        working = np.zeros((sec.nlines, header.ns, header.nb), dtype="uint8")
+        curpos = 0
+        # if we've dropped any information into the leading bin
+        # dump it out into for into the working array
+        if np.any(leading_bin):
+            idx_bin_fill = np.all(np.any(leading_bin, 1), 1)
+            pos_fill = np.where(idx_bin_fill)[0]
+            working[pos_fill] = leading_bin[pos_fill]
+            curpos = pos_fill[-1] + 1
+            # empty the leading bin
+            leading_bin = np.zeros(
+                (header.chunksize, header.ns, header.nb), dtype="uint8"
+            )
+        # you need to monitor the processed lines to maintain this loop
+        while (curchunk * header.chunksize - processed_lines) < sec.nlines:
+            total_offset = chunk_offset_array[curchunk] + 4 * (header.nchunks + 1) + 64
+            chunksize_in_bytes = (
+                chunk_offset_array[curchunk + 1] - chunk_offset_array[curchunk]
+            )
+            file.seek(total_offset)
+            chunk = file.read(chunksize_in_bytes)
+            np_image = decode_jpeg(chunk, colorspace="BGR")
+            np_image = np.flipud(np_image)
+            nr = np_image.shape[0]
+            end_pos = curpos + nr
+
+            if end_pos <= sec.nlines:
+                working[curpos:end_pos, :, :] = np_image
+            elif end_pos > sec.nlines:
+                nextra = end_pos - sec.nlines
+                end_pos = sec.nlines
+                end_np = nr - nextra
+                working[curpos:end_pos, :, :] = np_image[0:end_np]
+                # put the remaining information into leading bin
+                leading_bin[0:nextra, :, :] = np_image[end_np:nr]
+
+            curpos = curpos + nr
+            # increment the chunk
+            curchunk += 1
+
+        # book keeping the processed lines
+        processed_lines += sec.nlines
+
+        idx_section = section_array == i
+        im_cuts = np.floor(sample_array[idx_section] / yres).astype(int)
+        cut_array = np.concatenate([[0], np.cumsum(im_cuts).ravel()])
+
+        n_cuts = len(cut_array)
+        for j in range(n_cuts - 1):
+            current_image = working[cut_array[j] : cut_array[j + 1]]
+            tmp_file = "{}.jpg".format(cursample)
+            outfile = outfolder.joinpath(tmp_file)
+            outjpg = encode_jpeg(current_image)
+            with open(outfile, "wb") as tmpf:
+                tmpf.write(outjpg)
+            cursample += 1
+
+
 def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
     """Reads the files with the .tsg extension which are almost a toml file
     but not quite so the standard parser doesn't work
@@ -279,7 +444,7 @@ def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
     """
     lines: list[str] = []
     tmp_line: str
-    with open(filename,encoding='cp1252') as file:
+    with open(filename, encoding="cp1252") as file:
         for line in file:
             tmp_line = line.rstrip()
             lines.append(tmp_line)
@@ -548,15 +713,15 @@ def _parse_scalars(
 ) -> pd.DataFrame:
 
     """
-    function to map the scalars to a pandas data frame with names and 
+    function to map the scalars to a pandas data frame with names and
     mapped values
     """
-    tmp_series:list[pd.DataFrame] = []
+    tmp_series: list[pd.DataFrame] = []
     for i in bandheaders:
         band_value = scalars[:, i.band]
-        #handle flag 13 that has a path to plsscalars
+        # handle flag 13 that has a path to plsscalars
         if i.flag == 2:
-            if (i.class_number > 0):
+            if i.class_number > 0:
                 bv = band_value.astype(int)
                 tn = classes[i.class_number].map_ints(bv)
                 tmp_series.append(pd.DataFrame(tn, columns=[i.name]))
@@ -564,7 +729,7 @@ def _parse_scalars(
                 tmp_series.append(pd.DataFrame(band_value, columns=[i.name]))
         else:
             tmp_series.append(pd.DataFrame(band_value, columns=[i.name]))
-    output:pd.DataFrame = pd.concat(tmp_series, axis=1)
+    output: pd.DataFrame = pd.concat(tmp_series, axis=1)
 
     return output
 
@@ -577,7 +742,7 @@ def read_tsg_bip_pair(
     info = _parse_tsg(fstr, headers)
     spectra = _read_bip(bip_file, info["coordinates"])
     wavelength = _calculate_wavelengths(info["wavelength specs"], info["coordinates"])
-    scalars = _parse_scalars(spectra[1, :, :],info['class'],info['band headers'])
+    scalars = _parse_scalars(spectra[1, :, :], info["class"], info["band headers"])
 
     package = Spectra(
         spectrum,
@@ -592,7 +757,7 @@ def read_tsg_bip_pair(
     return package
 
 
-def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> TSG:
+def read_package(foldername: Union[str, Path], read_cras_file: bool = False, extract_cras:bool=False, imageoutput:Union[str, None]=None) -> TSG:
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
     if isinstance(foldername, str):
         foldername = Path(foldername)
@@ -656,7 +821,17 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False) -> 
     else:
         lidar = None
     if file_pairs.valid_cras() and read_cras_file:
-        cras = read_cras(file_pairs.cras)
+        if extract_cras:
+            if imageoutput is None:
+                imageoutput = foldername.joinpath('\IMG')
+            # check if the file exists
+            if not imageoutput.exists():
+                imageoutput.mkdir()
+
+            extract_chips(file_pairs.cras,imageoutput, nir)
+        else:
+            cras = read_cras(file_pairs.cras)
+
     else:
         cras = Cras
 

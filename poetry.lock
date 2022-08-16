@@ -324,7 +324,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 name = "pillow"
 version = "9.2.0"
 description = "Python Imaging Library (Fork)"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -424,6 +424,17 @@ typing-extensions = "*"
 [package.extras]
 test = ["pytest (>=6.2)", "virtualenv (>20)"]
 toml = ["setuptools (>=42)"]
+
+[[package]]
+name = "simplejpeg"
+version = "1.6.5"
+description = "A simple package for fast JPEG encoding and decoding."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
 
 [[package]]
 name = "six"
@@ -629,7 +640,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "eee5aa0668bc340c0c00a55eded843c81307c81045389434be503c4706336be9"
+content-hash = "4fd059fedd4c581e453b0ad653e9588abe18f79e28a157c1b4468ae10311ce23"
 
 [metadata.files]
 alabaster = [
@@ -1030,6 +1041,62 @@ requests = [
 setuptools-scm = [
     {file = "setuptools_scm-7.0.5-py3-none-any.whl", hash = "sha256:7930f720905e03ccd1e1d821db521bff7ec2ac9cf0ceb6552dd73d24a45d3b02"},
     {file = "setuptools_scm-7.0.5.tar.gz", hash = "sha256:031e13af771d6f892b941adb6ea04545bbf91ebc5ce68c78aaf3fff6e1fb4844"},
+]
+simplejpeg = [
+    {file = "simplejpeg-1.6.5-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:49c80cebb911742841791077afa4e2a3467fb2f0d0704a48b76fae2a45b97c5a"},
+    {file = "simplejpeg-1.6.5-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:34e94824596d0fe331b8f614c3db9b5dff8ec72056de86a7774cc4dee9c7f778"},
+    {file = "simplejpeg-1.6.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:77dbfc974ecd070809e337383ddfd5f1e5881c5ec6db44709ce56c43dd37f8d7"},
+    {file = "simplejpeg-1.6.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6272c0e9503c7047e41b6470c3b7f9de168d4c97e9cc062a54e8273272010607"},
+    {file = "simplejpeg-1.6.5-cp310-cp310-win_amd64.whl", hash = "sha256:756fe6d6e2054614d1f08a1f1dc4b9f131183e21b1a88440001a60dfc7f99984"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:8e6f0eeb46b582cec9b60972fc572ea0d4b6e6dacbe43b2341ff757f6e8896b5"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3ea614d5ee1fb5b7a9d076cd6185d0d47cb3239919c304dc7ede08f0c05dce98"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_24_i686.whl", hash = "sha256:087aea0e5da731fc0b4f3600c3f71e33697a9717596c71ee072b8963cd0aadd0"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:6c33224c23fbaa0039846ed3a144db7537129f9aa1e53e8cdc1bd3230cbdf9b6"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a0e142479518752ad33be1dba37623f1a82bc5b512054f87bd69870314c34bcf"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:18aee91cc01b4d6ad7b45781eaa6fde06dbc6b19fa6643176c0dfd6ee68c73ff"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:f825b9d9ac8889039bf2e2997ded80e19292b6b81819e5eca7c5bad2e6b1c805"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4ba11dde7a50047eb958e4c6b8a37059511b6da0007633285d5e80d12659f512"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:0c57c06114397330eee87fcc6a1a7c24a1a901391dccce925164d9a0b08f6cc7"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:0dd1cd7f9aad8f7f603cb11b9294cf8228e1b5f37f3e38185639b47d1d433c2e"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-win32.whl", hash = "sha256:ec939555d934ec728ebc638342638378e2adc88da0424908d9d7841b910446c7"},
+    {file = "simplejpeg-1.6.5-cp36-cp36m-win_amd64.whl", hash = "sha256:6664b74423f07e4a214724ed70aaf39e2dee12de431f2d7e88155c694f62a394"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:a7af0b0770d7337616f211e97cc78bd36983bd58bea648dc589039e99c681909"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:31739d7016e4f633395ec78d0638ae2ef0efa4dfdc848efd5ad9fc0c1baac89f"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_24_i686.whl", hash = "sha256:7aa71e8bd54112646d5433045c4bc1119683543b6971e651a269e996830fa9af"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:4163f0d8896d927d73bfd0effd8f1594581117bedf6fd9b6856da7309d08bb22"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:c6b335a243877d16bd609b578b09f045172d8d8e0f9df155279ae47054aaaba4"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:9e4d8ec4479cdf72c3007d127f91fdc5a364bf5075281f81b90fb3ad1a15978f"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:02912fe75497a342e311e808a050af4da28052f1c7fd0936a15fb21035cfd7f7"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:40949b9c17331dd4a44fac52f23bd11413b6ecfe1f15900164779032de00b633"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:7ca69db366fac0a182c6d54626e6664c0f7e5597e6aa70e79e56bcec5955bbe8"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:db887fb426ca015a2f181e8b0dc29a9738e4c2b4ea2984dd850d80044faed937"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-win32.whl", hash = "sha256:ab9658c4cd4fe23dae132820e1e2c745f239b07b3bd2a8406e5e4587e91bd83e"},
+    {file = "simplejpeg-1.6.5-cp37-cp37m-win_amd64.whl", hash = "sha256:31c01f553d3dcaa94ae41c936fd46e59acf45139ca2f0812eeed5383ec0caeb1"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9974bf24ab2b52295560d561ea0ceaef7496cf9a40388cb96244c7b9199bbb75"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:79a7b8f6cbffdcf41bea935d54da0eaa595bb0cac9cea6f2f68f262873674cd5"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_24_i686.whl", hash = "sha256:8393756752aa04ed2faaf032837531ea1552dace73d7f0307a2ad7e9fb271a5d"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:a3a1c31ba3e9fecc7a48e3670c496f86bfe55afd6ffe4bfe0cdcc21b5a101ac7"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:e83d0871edf8079a616120f237ebbcceddc855549adbdbf993bc2102f5128cad"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:783541c5ba21d65db55162857dd6b33f380ac91bcb21b9f4e372754bca579965"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:6babfd566985880a5a8add06d2c3777bad0b333be3e64af4d66d1b51b6c83600"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:049754073d9a57f4941af86af335c04814c542e9c0befb444325bccd4a7fcf07"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:cacbd3f158a3955ff02d945909d036fb447177b5d55797b7bee5462bd724f445"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:28472a0ae6f3106ba182c62a4be08bfe011034502cf755b96cdd72f256fceafe"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-win32.whl", hash = "sha256:0f1a1f8f81379a7e1e6831585edc260781c37c253add56ae91ea9a308b3b2974"},
+    {file = "simplejpeg-1.6.5-cp38-cp38-win_amd64.whl", hash = "sha256:0c822db4b3df4f5182587e8e246ebe2d5a1689912dc1b86e908f565e1f436aba"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:12f8d4703bf1ed4585e5e0e06444664d93b3fedd9c61ade42754eeb1774fe470"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7d1b56978ee069b892c830dd37c0ca8ed5d8a7cf1ce51ef250160e74f6768d99"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_24_i686.whl", hash = "sha256:1235ff17c56a3edd7e417ebe4a97ec4c2e6d2c110d39c40e401a5f1bcb4826b6"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:d5646723cbed93357461c244c3128124f0dd524a8655f87f724b6ca3f50b59cb"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:e5ba224b8064747e8149b48e0ec071e37ccbbe6a70aadd279ff81ef129e9781d"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:66d8588b23e49c08e28a6d1500067c333dca6cc8f8831755b658172a5354fd75"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:1325099edd6342e58c457af76dfc8da9f2e63b8ec133c1bc8e10fae2fe3a803c"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2006bd4a8a2c63655baaa4365fdf640eaf1ba96f267ae4ee03ce177d2c05578f"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:bbe7fd64117f347846594cf98ddcf75e3875e95bd3d67842306639c4439111db"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:c95f6a6690b20f440f417596bb2acdee2fead13b2cfd62b95cc3d1b861e54ded"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-win32.whl", hash = "sha256:90df8ce018f4e28eae0d2479ad5ecf39640d85a2a6e91bcef4a1766f0759734c"},
+    {file = "simplejpeg-1.6.5-cp39-cp39-win_amd64.whl", hash = "sha256:8577026594c5f0e12d4613f89879f138c7c4e29df68e9bc8e6a2229490a8471f"},
+    {file = "simplejpeg-1.6.5.tar.gz", hash = "sha256:788dd8819bd11b7f52d958f3ab9259098cf895bd4f7e411dd9dd2172d5c41139"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
