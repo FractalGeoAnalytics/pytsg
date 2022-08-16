@@ -824,6 +824,9 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False, ext
         if extract_cras:
             if imageoutput is None:
                 imageoutput = foldername.joinpath('IMG')
+
+            if isinstance(imageoutput, str):
+                imageoutput = Path(imageoutput)
             # check if the file exists
             if not imageoutput.exists():
                 imageoutput.mkdir()
