@@ -823,12 +823,13 @@ def read_package(foldername: Union[str, Path], read_cras_file: bool = False, ext
     if file_pairs.valid_cras() and read_cras_file:
         if extract_cras:
             if imageoutput is None:
-                imageoutput = foldername.joinpath('\IMG')
+                imageoutput = foldername.joinpath('IMG')
             # check if the file exists
             if not imageoutput.exists():
                 imageoutput.mkdir()
 
             extract_chips(file_pairs.cras,imageoutput, nir)
+            cras = Cras
         else:
             cras = read_cras(file_pairs.cras)
 
