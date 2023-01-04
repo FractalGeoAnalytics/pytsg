@@ -4,6 +4,7 @@ version = "0.2.6"
 description = "Library to read .tsg file package"
 authors = ["Ben <ben@fractalgeoanalytics.com>"]
 license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
