@@ -7,7 +7,7 @@ pytsg is an open source one function utility that imports the spectral geologist
 
 ## Installation
 Installation is simple
-```pip install git+https://github.com/FractalGeoAnalytics/pytsg```
+```pip install pytsg```
 
 ## Usage
 
