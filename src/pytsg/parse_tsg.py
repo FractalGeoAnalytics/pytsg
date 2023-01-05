@@ -1,7 +1,6 @@
 """ The parse_tsg Module
 """
 
-import io
 import re
 import struct
 from dataclasses import dataclass
