@@ -631,14 +631,13 @@ def read_hires_dat(filename: Union[str, Path], per_spectra: bool =True) -> NDArr
     Examples:
     """
     with open(hirespath, "rb") as f:
-        idchar = f.read(20)  # CoreLog high-res 1.0
-        nsclr, nl, nsps = np.fromfile(f, np.int32, 3) # 1, nbytes, samples per spectra
-        minp, maxp = np.fromfile(f, np.float32, 2) # minimum and maximum values
-        _prof = f.read(12) # "Profilometer"
-        _ = np.fromfile(f, np.ubyte, 4) # four int8 zeros/null bytes
-        lidar = np.fromfile(f, dtype=np.float32)
-        # could do additional validation here
-        lidar[lidar < minp] = np.nan
+        _idchar = f.read(20)                            # "CoreLog high-res 1.0"
+        _nsclr, _nl, nsps = np.fromfile(f, np.int32, 3) # 1, nbytes, samples per spectra
+        minp, maxp = np.fromfile(f, np.float32, 2)      # minimum and maximum values
+        _prof = f.read(12)                              # "Profilometer"
+        _ = np.fromfile(f, np.ubyte, 4)                 # four int8 zeros/null bytes
+        lidar = np.fromfile(f, dtype=np.float32)        # nl bytes of profilometer data
+        lidar[lidar < minp] = np.nan                    # could do additional validation here
 
     if per_spectra:
         with warnings.catch_warnings():
