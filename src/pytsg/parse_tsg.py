@@ -7,6 +7,7 @@ import struct
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NamedTuple, Tuple, Union
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -619,19 +620,31 @@ def _calculate_wavelengths(
     )
 
 
-def read_hires_dat(filename: Union[str, Path]) -> NDArray:
+def read_hires_dat(filename: Union[str, Path], per_spectra: bool =True) -> NDArray:
     """Read the *hires.dat* file which contains the lidar scan
     of the material
 
     Args:
         filename: location of the .dat file
+        per_spectra : whether to get one sample per spectra, or all samples.
     Returns:
-        np.ndarray representing the
+        np.ndarray representing the profilometer data array.
     Examples:
     """
-    # the hires .dat file is f32 and the actual data starts at pos 640
-    # the rest is probably information pertaining to the instrument itself
-    lidar = np.fromfile(filename, dtype=np.float32, offset=640)
+    with open(hirespath, "rb") as f:
+        idchar = f.read(20)  # CoreLog high-res 1.0
+        nsclr, nl, nsps = np.fromfile(f, np.int32, 3) # 1, nbytes, samples per spectra
+        minp, maxp = np.fromfile(f, np.float32, 2) # minimum and maximum values
+        _prof = f.read(12) # "Profilometer"
+        _ = np.fromfile(f, np.ubyte, 4) # four int8 zeros/null bytes
+        lidar = np.fromfile(f, dtype=np.float32)
+        # could do additional validation here
+        lidar[lidar < minp] = np.nan
+
+    if per_spectra:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message="Mean of empty slice")
+            lidar = np.nanmean(lidar.reshape(-1, nsps), axis=1)
     return lidar
 
 
