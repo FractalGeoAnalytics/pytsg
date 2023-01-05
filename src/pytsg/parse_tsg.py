@@ -630,7 +630,7 @@ def read_hires_dat(filename: Union[str, Path], per_spectra: bool =True) -> NDArr
         np.ndarray representing the profilometer data array.
     Examples:
     """
-    with open(hirespath, "rb") as f:
+    with open(filename, "rb") as f:
         _idchar = f.read(20)                            # "CoreLog high-res 1.0"
         _nsclr, _nl, nsps = np.fromfile(f, np.int32, 3) # 1, nbytes, samples per spectra
         minp, maxp = np.fromfile(f, np.float32, 2)      # minimum and maximum values
