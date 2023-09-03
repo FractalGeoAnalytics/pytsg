@@ -54,6 +54,16 @@ lidar = parse_tsg.read_lidar('ETG0187_tsg_hires.dat')
 
 
 ```
+ASD File reading support has been added with the addition of the asdreader from https://github.com/ajtag/asdreader.
+pytsg includes the asdreader from ajtag as is. The intention of adding the asdreader is to allow for a simpler user workflow by allowing pip installation
+
+ASD files can be read like so.
+
+
+```python
+from pytsg.asdreader import asdreader
+asd = asdreader.reader("pathtoasd.asd")
+```
 
 ## Thanks
-Thanks to CSIRO and in particular Andrew Rodger for their assistance in decoding the file structures.
+Thanks to CSIRO and in particular Andrew Rodger for his assistance in decoding the file structures.
