@@ -1,1 +1,3 @@
-
+[submodule "src/pytsg/asdreader"]
+	path = src/pytsg/asdreader
+	url = https://github.com/ajtag/asdreader.git

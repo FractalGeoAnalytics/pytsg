@@ -210,3 +210,4 @@ src/pytsg/__pycache__/**
 *doc
 *.tox
 *dist
+.vscode/settings.json
