@@ -6,7 +6,7 @@ https://research.csiro.au/thespectralgeologist/
 pytsg is an open source one function utility that imports the spectral geologist file package into a simple object.
 
 ## Installation
-Installation is simple
+Installation is via pip
 ```pip install pytsg```
 
 ## Usage

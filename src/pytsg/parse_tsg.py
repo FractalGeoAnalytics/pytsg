@@ -213,7 +213,22 @@ def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
 
         file.seek(64)
         b = file.read(4 * (header.nchunks + 1))
-        chunk_offset_array = np.ndarray((header.nchunks + 1), np.uint32, b)
+        # fmt: off
+        chunk_offset_array: NDArray[np.int64] = np.ndarray((header.nchunks + 1), np.uint32, b).astype(np.uint64)
+        # deal with +4gb cras files by using uint64
+        diff_offset: NDArray[np.uint64] = np.diff(chunk_offset_array, prepend=1).astype(np.uint64)
+        overflow_finder: NDArray[np.int64] = np.where(diff_offset < -1)[0].astype(np.uint64)
+        # fmt: on
+
+        if len(overflow_finder) > 1:
+            raise IndexError("Chunk offset array wraps around more than once")
+        if len(overflow_finder) > 0:
+            # add np.int32 max to the offset array this should be ok, unless there is a case where there is more than 1 overflow,
+            # in which case I expect the cras reading component to crash
+            chunk_offset_array[overflow_finder[0] :] += np.int64(
+                np.iinfo(np.uint32).max + 1
+            )
+
         # we currently are reading the entire cras.bip file
         # which can cause issues due to memory allocation  well handle that case
         # with some error handling here where we quit while we are ahead
@@ -236,7 +251,9 @@ def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
             curpos: int = 0
             nr: int
             for i in range(header.nchunks):
-                total_offset = chunk_offset_array[i] + 4 * (header.nchunks + 1) + 64
+                total_offset = (
+                    chunk_offset_array[i] + 4 * (header.nchunks + 1) + 64
+                ).astype(int)
                 chunksize_in_bytes = chunk_offset_array[i + 1] - chunk_offset_array[i]
                 file.seek(total_offset)
                 chunk = file.read(chunksize_in_bytes)
@@ -255,7 +272,7 @@ def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
             + (header.nchunks + 1) * 4
             + chunk_offset_array[header.nchunks]
             - chunk_offset_array[0]
-        )
+        ).astype(np.uint64)
         file.seek(info_table_start)
 
         tray: list[TrayInfo] = []

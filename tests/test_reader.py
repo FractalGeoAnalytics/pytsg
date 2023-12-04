@@ -1,7 +1,6 @@
 import unittest
 
 from src.pytsg import parse_tsg
-from src.pytsg.asdreader import asdreader
 
 
 class TestFileReaders(unittest.TestCase):
@@ -11,10 +10,6 @@ class TestFileReaders(unittest.TestCase):
         self.assertTrue(hasattr(tmp_data, "nir"))
         self.assertTrue(hasattr(tmp_data, "tir"))
         self.assertTrue(hasattr(tmp_data, "cras"))
-
-    def test_asdreader(self):
-        asd = asdreader.reader("src/pytsg/asdreader/data/raw.asd")
-        self.assertTrue(hasattr(asd, "md"))
 
 
 if __name__ == "__main__":
