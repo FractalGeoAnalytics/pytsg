@@ -37,6 +37,8 @@ def band_extractor(
         statistic (list[callable]): list of callables that will be called on the spectra
     returns: (NDArray) 2d array of band statistics rows represent the spectra, columns represent the parameters, results are returned in channel space.
     """
+    if spectra.ndim != 2:
+        raise ValueError("spectra must be a 2d array")
     if end == -1:
         # handle the -1 case for the end of the spectra
         end = spectra.shape[1]
@@ -75,7 +77,8 @@ def sqm(
     # handle the None case for the start and end of the wavelength selection
     start: int
     end: int
-
+    if spectra.ndim != 2:
+        raise ValueError("spectra must be a 2d array")
     if start_wavelength == None:
         start = 0
     else:
@@ -92,9 +95,10 @@ def sqm(
     coefs = poly.polyfit(wavelength[start:end], spectra[:, start:end].T, 2)
     axis_of_symmetry = -(coefs[1, :] / (2 * coefs[2, :]))
     output: NDArray = np.zeros((rows, 3))
-    output[:, 0] = axis_of_symmetry.reshape(-1, 1)
+    output[:, 0] = axis_of_symmetry.ravel()
     vertex = poly.polyval(output[:, 0], coefs)
-    output[:, 1] = vertex
+
+    output[:, 1] = vertex[:, 0]
     # calculate the width of the polynomial
     for i in range(rows):
         output[i, 2] = np.diff(poly.polyroots(coefs[:, i].ravel()))
@@ -118,6 +122,8 @@ def fit_gaussian(
             results are returned in wavelength units
     """
 
+    if spectra.ndim != 2:
+        raise ValueError("spectra must be a 2d array")
     nspectra: int = spectra.shape[0]
 
     parameters: NDArray = np.zeros((nspectra, 3))
