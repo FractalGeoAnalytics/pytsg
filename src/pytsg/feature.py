@@ -3,6 +3,7 @@ from scipy.optimize import least_squares
 import numpy.polynomial.polynomial as poly
 from numpy.typing import NDArray
 from typing import Union, Callable
+from scipy.spatial import ConvexHull
 
 
 def gaussian(x: np.ndarray, amplitude: float, mu: float, std: float) -> NDArray:
@@ -135,3 +136,20 @@ def fit_gaussian(
         parameters[i, :] = lsf.x
 
     return parameters
+
+
+def chull(xy: NDArray) -> NDArray:
+    """
+    calculates the convex hull of a spectrum
+    parameters:
+        xy (np.ndarray): wavelength and reflectance of the spectra
+    returns: (NDArray) the convex hull of the spectra
+    """
+
+    vertices: NDArray = ConvexHull(xy).vertices
+    # cross product to check if the points are above or below the line if they are below the line
+    # the we will remove them
+    good_points: NDArray = np.cross(xy[vertices] - xy[0], xy[vertices] - xy[-1]) >= 0
+    good_verts: NDArray = np.sort(vertices[good_points])
+    hull: NDArray = np.interp(xy[:, 0], xy[good_verts, 0], xy[good_verts, 1])
+    return hull
