@@ -64,16 +64,12 @@ def sqm(
     implementation of the simple quadratic method for extracting the feature depth
     and position https://doi.org/10.1016/j.rse.2011.11.025
     parameters:
-        wavelength (np.ndarray): wavelength of the spectra
-        spectra (nd.array): 2d array of spectra rows x wavelength
+        wavelength (NDArray): wavelength of the spectra
+        spectra (NDArray): 2d array of spectra rows x wavelength
         start_wavelength (float): starting wavelength of the band if None than the first channel is used
         end_wavelength (float): ending wavelength of the band if the end wavelength is None then the last channel is used
-    returns: (list[np.ndarray]) list of 2d array of the extracted parameters in wavelength space,
-            rows represent spectra
-            the first return value is the 2nd degree poly coeficients,
-            the second is the wavelength position of maximum absorbtion
-            the third is the depth of the absorption
-            the fourth is the width of the 2nd degree polynomial evaluated at 0
+    returns: list[NDArray] a 2d array of the paramters representing  amplitude, centre, and width at the zero crossing i.e. the polynomial roots each row is a represent a spectrum
+            a 2d NDArray representing the coefficients of the 2nd degree polynomial in descending order
     """
     # handle the None case for the start and end of the wavelength selection
     start: int
@@ -94,13 +90,14 @@ def sqm(
     # we need to transpose the spectra so that we can run polyfit on the array
 
     coefs = poly.polyfit(wavelength[start:end], spectra[:, start:end].T, 2)
-    axis_of_symmetry = -(coefs[1, :] / (2 * coefs[2, :]))
+    axis_of_symmetry: NDArray = -(coefs[1, :] / (2 * coefs[2, :]))
+    # calculate amplitude, width and centre
     output: NDArray = np.zeros((rows, 3))
-    output[:, 0] = axis_of_symmetry.ravel()
-    vertex = poly.polyval(output[:, 0], coefs)
+    vertex: NDArray = poly.polyval(output[:, 0], coefs)
 
+    output[:, 0] = axis_of_symmetry.ravel()
     output[:, 1] = vertex[:, 0]
-    # calculate the width of the polynomial
+    # calculate the width of the polynomial at 0
     for i in range(rows):
         output[i, 2] = np.diff(poly.polyroots(coefs[:, i].ravel()))
     # concatenate the parameters into output array
