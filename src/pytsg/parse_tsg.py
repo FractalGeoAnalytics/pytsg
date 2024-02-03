@@ -13,6 +13,7 @@ import pandas as pd
 from numpy.core._exceptions import _ArrayMemoryError
 from numpy.typing import NDArray
 from simplejpeg import decode_jpeg, encode_jpeg
+import zarr
 
 
 class ClassHeaders(NamedTuple):
@@ -185,7 +186,9 @@ class FilePairs:
         return valid
 
 
-def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
+def read_cras(
+    filename: Union[str, Path], backing_file: Union[str, Path, None] = None
+) -> Cras:
     """Read a cras file
 
     Args:
@@ -197,7 +200,6 @@ def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
     section_info_format: str = "4f3i"
     tray_info_format: str = "3f2i"
     head_format: str = "20s2I8h4I2h"
-
     with open(filename, "rb") as file:
         # using memory mapping
 
@@ -232,15 +234,38 @@ def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
         # we currently are reading the entire cras.bip file
         # which can cause issues due to memory allocation  well handle that case
         # with some error handling here where we quit while we are ahead
-        try:
-            cras = np.zeros((header.nl, header.ns, header.nb), dtype=np.uint8)
-            array_ok = True
-        except _ArrayMemoryError:
-            print(
-                "This file is too big to fit inmemory set big_file=True to dump to disk"
+        # assume that the drive backing the file has enough space to store the files
+        # assume that there is enough ram to load the cras
+        array_ok: bool = True
+        cras: Union[NDArray, zarr.core.Array]  # type: ignore
+        if backing_file is not None:
+            # the big file flag decompresses the jpg data into a zarr array
+            # with zarr it is important to ensure that you set the chunks appropriately
+            # this means that you are aligning the output chunk size to the input chunk size
+            outcras: Path
+            if isinstance(backing_file, str):
+                outcras = Path(backing_file)
+            else:
+                outcras = backing_file
+
+            cras = zarr.open(
+                str(outcras),
+                mode="w",
+                shape=(header.nl, header.ns, header.nb),
+                chunks=(header.chunksize, header.ns, header.nb),
+                dtype=np.uint8,
             )
-            array_ok = False
-            cras = np.zeros(1, dtype=np.uint8)
+
+        else:
+            try:
+                cras = np.zeros((header.nl, header.ns, header.nb), dtype=np.uint8)
+                array_ok = True
+            except _ArrayMemoryError:
+                print(
+                    "This file is too big to fit inmemory set big_file=True to dump to disk"
+                )
+                array_ok = False
+                cras = np.zeros(1, dtype=np.uint8)
         # if the array fits into memory then proceed to decode the .jpgs
         # using the chunk_offset_array to correctly index to the right location
         # TODO: it might be worthwhile to modify this code to manage the case
@@ -260,7 +285,7 @@ def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
                 img = decode_jpeg(chunk, colorspace="BGR")
                 # reverse the channels
                 # and flip the image upsidedown
-                np_image = np.flipud(img)
+                np_image = np.flipud(img)  # type: ignore
                 nr = np_image.shape[0]
                 cras[curpos : (curpos + nr), :, :] = np_image
                 curpos = curpos + nr
@@ -284,13 +309,16 @@ def read_cras(filename: Union[str, Path], big_file=False) -> Cras:
         for i in range(header.nsections):
             bytes = file.read(28)
             section.append(SectionInfo(*struct.unpack(section_info_format, bytes)))
+    if backing_file is not None:
+        pd.DataFrame(section).to_csv(backing_file.with_suffix(".section"))
+        pd.DataFrame(tray).to_csv(backing_file.with_suffix(".tray"))
 
     output = Cras(cras, tray, section)
     return output
 
 
 def extract_chips(
-    filename: Union[str, Path], outfolder: Union[str, Path], spectra: Spectra
+    filename: Union[str, Path], outfolder: Union[str, Path], spectra: Spectra,centre_cut:bool = True
 ):
     if isinstance(outfolder, str):
         outfolder = Path(outfolder)
@@ -309,7 +337,7 @@ def extract_chips(
 
     # Create the chunk_offset_array
     # which determines which point of the file to enter to read the .jpg image
-
+    
     file.seek(64)
     b = file.read(4 * (header.nchunks + 1))
     chunk_offset_array = np.ndarray((header.nchunks + 1), np.uint32, b)
@@ -363,13 +391,21 @@ def extract_chips(
     # here we will do some trickery to reindex unique combinations of tray and line
     # by dropping the duplicates combinations of T and L and then reindexing
     # merging that index to the original file and then iterating over that.
-    tmp_headers: pd.DataFrame = (
-        spectra.sampleheaders[["T", "L"]].drop_duplicates().reset_index()
-    )
+
+    # test to see if the scalars have either ['T', 'L'] which should indicate a diamond drill hole
+    # if ['Tray', 'Section'] exist then it is likely that we are dealing with chip data
+    headers:list[str]
+    if spectra.sampleheaders.columns.isin(['Tray','Section']).sum() == 2:
+        headers = ['Tray','Section']
+    elif spectra.sampleheaders.columns.isin(['T','L']).sum() == 2:
+        headers = ['T','L']
+    elif spectra.sampleheaders.columns.isin(['sample']).sum() == 1:
+        headers = ['sample']
+    tmp_headers:pd.DataFrame = spectra.sampleheaders[headers].drop_duplicates().reset_index()
     # get the index and set it's value to the column called index
-    tmp_headers["index"] = tmp_headers.index
+    tmp_headers['index'] = tmp_headers.index
     # extract the index and use that as the section array
-    section_array: NDArray = spectra.sampleheaders.merge(tmp_headers)["index"].values
+    section_array:NDArray = spectra.sampleheaders.merge(tmp_headers)['index'].values
     sample_length = spectra.scalars["SecDist (mm)"].diff()
     # this is only na for the first sample
     idx_sample_na = (sample_length.isna()) | (sample_length < 0)
@@ -415,6 +451,7 @@ def extract_chips(
                 (header.chunksize, header.ns, header.nb), dtype="uint8"
             )
         # you need to monitor the processed lines to maintain this loop
+
         while (curchunk * header.chunksize - processed_lines) < sec.nlines:
             total_offset = chunk_offset_array[curchunk] + 4 * (header.nchunks + 1) + 64
             chunksize_in_bytes = (
@@ -427,16 +464,27 @@ def extract_chips(
             nr = np_image.shape[0]
             end_pos = curpos + nr
 
-            if end_pos <= sec.nlines:
+            if end_pos < sec.nlines:
                 working[curpos:end_pos, :, :] = np_image
             elif end_pos > sec.nlines:
                 nextra = end_pos - sec.nlines
                 end_pos = sec.nlines
                 end_np = nr - nextra
-                working[curpos:end_pos, :, :] = np_image[0:end_np]
-                # put the remaining information into leading bin
-                leading_bin[0:nextra, :, :] = np_image[end_np:nr]
+                if nextra == 0:
+                    end_np = nr
+                # case when curpos is gt manage this by appending all data in this chunk to the leading bin
+                if curpos < end_pos:
+                    working[curpos:end_pos, :, :] = np_image[0:end_np]
+                    # put the remaining information into leading bin
+                    leading_bin[0:nextra, :, :] = np_image[end_np:nr]
+                else:
+                    # put the remaining information into leading bin
+                    leading_bin[0:nr, :, :] = np_image
 
+            elif end_pos == sec.nlines:
+                # put the remaining information into leading bin
+                leading_bin[0:nr, :, :] = np_image
+                
             curpos = curpos + nr
             # increment the chunk
             curchunk += 1
@@ -447,9 +495,15 @@ def extract_chips(
         im_cuts = np.floor(sample_array[idx_section] / yres).astype(int)
         cut_array = np.concatenate([[0], np.cumsum(im_cuts).ravel()])
         n_cuts = len(cut_array)
-        for j in range(n_cuts - 1):
-            if cut_array[j + 1] <= sec.nlines:
+        for j in range(n_cuts-1):
+            if cut_array[j+1]<=sec.nlines:
                 current_image = working[cut_array[j] : cut_array[j + 1]]
+                if centre_cut:
+                    # cut the 8mm centre matching the spot
+                    n_pix_8mm = int(8/yres)
+                    mid_point = int(current_image.shape[1]/2)
+                    n_half = n_pix_8mm//2
+                    current_image = current_image[:,(mid_point-n_half):(mid_point+n_half),:].copy()
 
                 tmp_file = "{}.jpg".format(cursample)
                 outfile = outfolder.joinpath(tmp_file)
@@ -457,7 +511,6 @@ def extract_chips(
                 with open(outfile, "wb") as tmpf:
                     tmpf.write(outjpg)
                 cursample += 1
-                print(cursample)
 
 
 def _read_tsg_file(filename: Union[str, Path]) -> "list[str]":
@@ -799,6 +852,7 @@ def read_package(
     read_cras_file: bool = False,
     extract_cras: bool = False,
     imageoutput: Union[str, None] = None,
+    backing_file: Union[Path, str, None] = None,
 ) -> TSG:
     # convert string to Path because we are wanting to use Pathlib objects to manage the folder structure
     if isinstance(foldername, str):
@@ -876,7 +930,7 @@ def read_package(
             extract_chips(file_pairs.cras, imageoutput, nir)
             cras = Cras
         else:
-            cras = read_cras(file_pairs.cras)
+            cras = read_cras(file_pairs.cras, backing_file)
 
     else:
         cras = Cras

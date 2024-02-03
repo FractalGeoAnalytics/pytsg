@@ -1,6 +1,7 @@
 import unittest
 
 from src.pytsg import parse_tsg
+import tempfile
 
 
 class TestFileReaders(unittest.TestCase):
