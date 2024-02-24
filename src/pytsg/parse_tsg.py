@@ -47,7 +47,9 @@ class CrasHeader(NamedTuple):
     nchunks: int  # number of compressed image chunks (jpeg compression)
     csize32_obs: int  # size in bytes of comressed image data (OBSOLETE - not used anywhere any more.   However it will be set in old linescan rasters so I cant easily recycle it.   Also  there are some compressed rasters out there that are >4GB in size)
     ntrays: int  # number of trays (number of tray-table records after the image data)
-    nsections: int  # number of sections (number of section-table records after the image data)
+    nsections: (
+        int  # number of sections (number of section-table records after the image data)
+    )
     finerep: int  # chip-mode datasets - number of spectral measurements per chip bucket (and theres one image frame per bucket)
     jpqual: int  # jpeg quality factor  0..100 (jpeg compression)
 
@@ -61,7 +63,9 @@ class TrayInfo(NamedTuple):
 
 
 class SectionInfo(NamedTuple):
-    utlengthmm: float  # untrimmed length of imagery in mm (could be less than the tray's)
+    utlengthmm: (
+        float  # untrimmed length of imagery in mm (could be less than the tray's)
+    )
     startmm: float  # start position (along scan) in mm
     endmm: float  # end position in mm
     trimwidthmm: float  # active (section-overlap-corrected) image width in mm
@@ -317,8 +321,71 @@ def read_cras(
     return output
 
 
+def integer_down_sample_spectra(spectra: Spectra, factor: int = 4) -> Spectra:
+    """
+    Downsamples the spectra by an integer factor keeps all the information pertaining to depth registration but looses
+    all the other parameters in the scalars keep no
+
+    """
+    secdist = spectra.sampleheaders["X"].astype(float).map(np.round).copy()
+    sections = spectra.sampleheaders["T"] + spectra.sampleheaders["L"]
+    sections = sections.map({n: i for i, n in enumerate(sections.unique())})
+    new_intervals = sections.values * 0
+    int_intervals = sections.values * 0
+
+    length_mm: int = secdist.diff().median().astype(int)
+    length_factor = length_mm * factor
+    int_interval = 0
+    for i in sections.astype(int).unique():
+        sidx = sections == i
+        section = sections[sidx]
+        cut_points = _greedy_composite(secdist[sidx].values, length_factor)
+        tmp_section = section.values * 0
+        for n, (fr, to) in enumerate(zip(cut_points[:-1], cut_points[1:])):
+            tmpidx = (secdist[sidx].values >= fr) & (secdist[sidx].values <= to)
+            tmp_section[tmpidx] = n
+        new_intervals[sidx.values] = tmp_section
+        int_intervals[sidx.values] = tmp_section + int_interval
+        int_interval += tmp_section.max() + 1
+
+    comp_spectra = np.ones((int_interval, spectra.spectra.shape[1]))
+    for i in range(int_interval):
+        idx = int_intervals == i
+        comp_spectra[i, :] = spectra.spectra[idx].mean(0)
+
+    spectra.sampleheaders["new_intervals"] = new_intervals
+    spectra.sampleheaders["Section"] = sections
+    spectra.sampleheaders[["new_intervals"]] + spectra.sampleheaders[["Section"]]
+    new_depths = (
+        spectra.sampleheaders[
+            ["Section", "sample", "T", "P", "X", "L", "new_intervals"]
+        ]
+        .astype(float)
+        .groupby(["Section", "new_intervals"])
+        .max()
+        .reset_index()
+    )
+    spectra.scalars = spectra.scalars.copy()
+    spectra.scalars["new_intervals"] = new_intervals
+    spectra.scalars["Section"] = sections
+    new_scalay = (
+        spectra.scalars[["Section", "new_intervals", "SecDist (mm)"]]
+        .astype(float)
+        .groupby(["Section", "new_intervals"])
+        .max()
+        .reset_index()
+    )
+    spectra.sampleheaders = new_depths
+    spectra.scalars = new_scalay
+    spectra.sampleheaders
+    return spectra
+
+
 def extract_chips(
-    filename: Union[str, Path], outfolder: Union[str, Path], spectra: Spectra,centre_cut:bool = True
+    filename: Union[str, Path],
+    outfolder: Union[str, Path],
+    spectra: Spectra,
+    centre_cut: bool = True,
 ):
     if isinstance(outfolder, str):
         outfolder = Path(outfolder)
@@ -337,7 +404,7 @@ def extract_chips(
 
     # Create the chunk_offset_array
     # which determines which point of the file to enter to read the .jpg image
-    
+
     file.seek(64)
     b = file.read(4 * (header.nchunks + 1))
     chunk_offset_array = np.ndarray((header.nchunks + 1), np.uint32, b)
@@ -394,23 +461,28 @@ def extract_chips(
 
     # test to see if the scalars have either ['T', 'L'] which should indicate a diamond drill hole
     # if ['Tray', 'Section'] exist then it is likely that we are dealing with chip data
-    headers:list[str]
-    if spectra.sampleheaders.columns.isin(['Tray','Section']).sum() == 2:
-        headers = ['Tray','Section']
-    elif spectra.sampleheaders.columns.isin(['T','L']).sum() == 2:
-        headers = ['T','L']
-    elif spectra.sampleheaders.columns.isin(['sample']).sum() == 1:
-        headers = ['sample']
-    tmp_headers:pd.DataFrame = spectra.sampleheaders[headers].drop_duplicates().reset_index()
+    headers: list[str]
+    if spectra.sampleheaders.columns.isin(["Tray", "Section"]).sum() == 2:
+        headers = ["Tray", "Section"]
+    elif spectra.sampleheaders.columns.isin(["T", "L"]).sum() == 2:
+        headers = ["T", "L"]
+    elif spectra.sampleheaders.columns.isin(["sample"]).sum() == 1:
+        headers = ["sample"]
+    tmp_headers: pd.DataFrame = (
+        spectra.sampleheaders[headers].drop_duplicates().reset_index()
+    )
     # get the index and set it's value to the column called index
-    tmp_headers['index'] = tmp_headers.index
+    tmp_headers["index"] = tmp_headers.index
     # extract the index and use that as the section array
-    section_array:NDArray = spectra.sampleheaders.merge(tmp_headers)['index'].values
+    section_array: NDArray = spectra.sampleheaders.merge(tmp_headers)["index"].values
     sample_length = spectra.scalars["SecDist (mm)"].diff()
     # this is only na for the first sample
     idx_sample_na = (sample_length.isna()) | (sample_length < 0)
     sample_length[idx_sample_na] = spectra.scalars["SecDist (mm)"][idx_sample_na]
     # pd is slow for lots of accesses
+
+    # aggregate the spectra to modulo
+
     sample_array: NDArray = sample_length.values
     curchunk: int = 0
     cursample: int = 0
@@ -484,7 +556,7 @@ def extract_chips(
             elif end_pos == sec.nlines:
                 # put the remaining information into leading bin
                 leading_bin[0:nr, :, :] = np_image
-                
+
             curpos = curpos + nr
             # increment the chunk
             curchunk += 1
@@ -495,15 +567,16 @@ def extract_chips(
         im_cuts = np.floor(sample_array[idx_section] / yres).astype(int)
         cut_array = np.concatenate([[0], np.cumsum(im_cuts).ravel()])
         n_cuts = len(cut_array)
-        for j in range(n_cuts-1):
-            if cut_array[j+1]<=sec.nlines:
+        for j in range(n_cuts - 1):
+            if cut_array[j + 1] <= sec.nlines:
                 current_image = working[cut_array[j] : cut_array[j + 1]]
                 if centre_cut:
-                    # cut the 8mm centre matching the spot
-                    n_pix_8mm = int(8/yres)
-                    mid_point = int(current_image.shape[1]/2)
-                    n_half = n_pix_8mm//2
-                    current_image = current_image[:,(mid_point-n_half):(mid_point+n_half),:].copy()
+                    # cut the image square where y i.e. depth is equal to scan width
+                    mid_point = int(current_image.shape[1] / 2)
+                    n_half = current_image.shape[0] // 2
+                    current_image = current_image[
+                        :, (mid_point - n_half) : (mid_point + n_half), :
+                    ].copy()
 
                 tmp_file = "{}.jpg".format(cursample)
                 outfile = outfolder.joinpath(tmp_file)
