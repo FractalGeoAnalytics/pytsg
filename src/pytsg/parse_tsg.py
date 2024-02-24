@@ -321,10 +321,13 @@ def read_cras(
     return output
 
 
-def integer_down_sample_spectra(spectra: Spectra, factor: int = 4) -> Spectra:
+def composite_spectra(spectra: Spectra, length: int = 4) -> Spectra:
     """
-    Downsamples the spectra by an integer factor keeps all the information pertaining to depth registration but looses
-    all the other parameters in the scalars keep no
+    Composites the spectra to a target interval length in mm
+    uses dhcomp's greedy_composite internally
+    keeps all the information pertaining to depth registration but looses
+    all the other parameters in the scalars so there is none of the extra information that
+    tsg normally provides
 
     """
     secdist = spectra.sampleheaders["X"].astype(float).map(np.round).copy()
@@ -333,13 +336,11 @@ def integer_down_sample_spectra(spectra: Spectra, factor: int = 4) -> Spectra:
     new_intervals = sections.values * 0
     int_intervals = sections.values * 0
 
-    length_mm: int = secdist.diff().median().astype(int)
-    length_factor = length_mm * factor
     int_interval = 0
     for i in sections.astype(int).unique():
         sidx = sections == i
         section = sections[sidx]
-        cut_points = _greedy_composite(secdist[sidx].values, length_factor)
+        cut_points = _greedy_composite(secdist[sidx].values, length)
         tmp_section = section.values * 0
         for n, (fr, to) in enumerate(zip(cut_points[:-1], cut_points[1:])):
             tmpidx = (secdist[sidx].values >= fr) & (secdist[sidx].values <= to)
