@@ -14,6 +14,7 @@ from numpy.core._exceptions import _ArrayMemoryError
 from numpy.typing import NDArray
 from simplejpeg import decode_jpeg, encode_jpeg
 import zarr
+from dhcomp.composite import _greedy_composite
 
 
 class ClassHeaders(NamedTuple):
