@@ -354,6 +354,7 @@ def composite_spectra(spectra: Spectra, length: int = 4) -> Spectra:
     for i in range(int_interval):
         idx = int_intervals == i
         comp_spectra[i, :] = spectra.spectra[idx].mean(0)
+    spectra.spectra = comp_spectra
 
     spectra.sampleheaders["new_intervals"] = new_intervals
     spectra.sampleheaders["Section"] = sections
