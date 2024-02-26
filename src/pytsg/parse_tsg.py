@@ -361,7 +361,7 @@ def composite_spectra(spectra: Spectra, length: int = 4) -> Spectra:
     spectra.sampleheaders[["new_intervals"]] + spectra.sampleheaders[["Section"]]
     new_depths = (
         spectra.sampleheaders[
-            ["Section", "sample", "T", "P", "X", "L", "new_intervals"]
+            ["Section", "sample", 'D',"T", "P", "X", "L", "new_intervals"]
         ]
         .astype(float)
         .groupby(["Section", "new_intervals"])
