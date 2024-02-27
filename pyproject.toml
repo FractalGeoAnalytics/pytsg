@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytsg"
-version = "0.4.11"
+version = "0.4.12"
 description = "Library to read .tsg file package"
 authors = ["Ben <ben@fractalgeoanalytics.com>"]
 license = "MIT"
