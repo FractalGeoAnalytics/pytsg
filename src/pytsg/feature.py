@@ -99,7 +99,7 @@ def sqm(
     output[:, 1] = vertex[:, 0]
     # calculate the width of the polynomial at 0
     for i in range(rows):
-        output[i, 2] = np.diff(poly.polyroots(coefs[:, i].ravel()))
+        output[i, 2] = np.diff(poly.polyroots(coefs[:, i].ravel()))[0]
     # concatenate the parameters into output array
     output_coefs = coefs.T
     return output, output_coefs
