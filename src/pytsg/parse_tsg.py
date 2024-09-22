@@ -1097,7 +1097,10 @@ def _parse_tsg(
 
 
 def _parse_scalars(
-    scalars: NDArray, classes: "list[ClassHeaders]", bandheaders: "list[BandHeaders]"
+    scalars: NDArray,
+    classes: "list[ClassHeaders]",
+    bandheaders: "list[BandHeaders]",
+    nodata: int = -1,
 ) -> pd.DataFrame:
     """
     function to map the scalars to a pandas data frame with names and
@@ -1109,7 +1112,13 @@ def _parse_scalars(
         # handle flag 13 that has a path to plsscalars
         if i.flag == 2:
             if i.class_number > 0:
-                bv = band_value.astype(int)
+                # replace missing values with `nodata (defaulting to -1)
+                # Note: the integer shouldn't exist in the `classes` keys
+                bv = np.where(
+                    np.isclose(band_value, np.finfo("float32").min),
+                    -1,
+                    band_value,
+                ).astype(int)
                 tn = classes[i.class_number].map_ints(bv)
                 tmp_series.append(pd.DataFrame(tn, columns=[i.name]))
             else:
