@@ -1236,11 +1236,11 @@ def read_package(
     if file_pairs.valid_tir():
         tir = read_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
     else:
-        tir = None
+        tir = Spectra
     if file_pairs.valid_mir():
         mir = read_tsg_bip_pair(file_pairs.mir_tsg, file_pairs.mir_bip, "mir")
     else:
-        mir = None
+        mir = Spectra
     if file_pairs.valid_lidar():
         lidar = read_hires_dat(file_pairs.lidar)
     else:
