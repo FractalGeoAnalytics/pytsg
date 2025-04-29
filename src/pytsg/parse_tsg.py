@@ -37,7 +37,7 @@ class CrasHeader(NamedTuple):
     id: str  # starts with "CoreLog Linescan ".   If it starts with "CoreLog Linescan 1." then it supports compression (otherwise ignore ctype).
     ns: int  # image width in pixels
     nl: int  # image height in lines
-    nb: int  # number of bands (1 or 3  but always 3 for HyLogger 1 / 2 / 3)
+    nb: int  # number of bands (1 or 3  but always 3 for HyLogger 1 / 2 / 3)- added mir tsg for HyLogger 4
     org: int  # interleave (1=BIL  2=BIP  and compressed rasters are always BIP while uncompressed ones are always BIL)
     dtype: int  # datatype (unused  always byte)
     specny: int  # number of linescan lines per dataset sample
@@ -103,6 +103,7 @@ class Spectra:
 @dataclass
 class TSG:
     nir: Spectra
+    mir: Spectra
     tir: Spectra
     cras: Cras
     lidar: Union[NDArray, None]
@@ -119,6 +120,8 @@ class FilePairs:
     nir_bip: Union[Path, None] = None
     tir_tsg: Union[Path, None] = None
     tir_bip: Union[Path, None] = None
+    mir_tsg: Union[Path, None] = None
+    mir_bip: Union[Path, None] = None
     lidar: Union[Path, None] = None
     cras: Union[Path, None] = None
 
@@ -168,6 +171,14 @@ class FilePairs:
 
     def valid_tir(self) -> bool:
         result = self._get_bip_tsg_pair("tir")
+        if result is None:
+            valid = False
+        else:
+            valid = True
+        return valid
+
+    def valid_mir(self) -> bool:
+        result = self._get_bip_tsg_pair("mir")
         if result is None:
             valid = False
         else:
@@ -1173,7 +1184,7 @@ def read_package(
     # we will parse the lidar height data because we can
 
     # process here is to map the files that we need together
-    # tir and nir files
+    # tir and nir files and mir in hylogger 4
     #
     # deal the files to the type
 
@@ -1193,6 +1204,12 @@ def read_package(
         elif f.name.endswith("tsg_tir.bip"):
             setattr(file_pairs, "tir_bip", f)
 
+        elif f.name.endswith("tsg_mir.tsg"):
+            setattr(file_pairs, "mir_tsg", f)
+
+        elif f.name.endswith("tsg_mir.bip"):
+            setattr(file_pairs, "mir_bip", f)
+
         elif f.name.endswith("tsg_cras.bip"):
             setattr(file_pairs, "cras", f)
 
@@ -1206,6 +1223,7 @@ def read_package(
     # read nir/swir
     nir: Spectra
     tir: Spectra
+    mir: Spectra
     lidar: Union[NDArray, None]
     cras: Cras
 
@@ -1218,6 +1236,10 @@ def read_package(
         tir = read_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
     else:
         tir = Spectra
+    if file_pairs.valid_mir():
+        mir = read_tsg_bip_pair(file_pairs.mir_tsg, file_pairs.mir_bip, "mir")
+    else:
+        mir = Spectra
     if file_pairs.valid_lidar():
         lidar = read_hires_dat(file_pairs.lidar)
     else:
@@ -1241,7 +1263,7 @@ def read_package(
     else:
         cras = Cras
 
-    return TSG(nir, tir, cras, lidar)
+    return TSG(nir, tir, mir, cras, lidar)
 
 
 if __name__ == "main":
