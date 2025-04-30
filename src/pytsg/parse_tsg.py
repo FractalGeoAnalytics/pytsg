@@ -38,6 +38,7 @@ class CrasHeader(NamedTuple):
     ns: int  # image width in pixels
     nl: int  # image height in lines
     nb: int  # number of bands (1 or 3  but always 3 for HyLogger 1 / 2 / 3)- added mir tsg for HyLogger 4
+    nb: int  # number of bands (1 or 3  but always 3 for HyLogger 1 / 2 / 3)- added mir tsg for HyLogger 4
     org: int  # interleave (1=BIL  2=BIP  and compressed rasters are always BIP while uncompressed ones are always BIL)
     dtype: int  # datatype (unused  always byte)
     specny: int  # number of linescan lines per dataset sample
@@ -122,6 +123,8 @@ class FilePairs:
     tir_bip: Union[Path, None] = None
     mir_tsg: Union[Path, None] = None
     mir_bip: Union[Path, None] = None
+    mir_tsg: Union[Path, None] = None
+    mir_bip: Union[Path, None] = None
     lidar: Union[Path, None] = None
     cras: Union[Path, None] = None
 
@@ -171,6 +174,14 @@ class FilePairs:
 
     def valid_tir(self) -> bool:
         result = self._get_bip_tsg_pair("tir")
+        if result is None:
+            valid = False
+        else:
+            valid = True
+        return valid
+
+    def valid_mir(self) -> bool:
+        result = self._get_bip_tsg_pair("mir")
         if result is None:
             valid = False
         else:
@@ -1185,6 +1196,7 @@ def read_package(
 
     # process here is to map the files that we need together
     # tir and nir files and mir in hylogger 4
+    # tir and nir files and mir in hylogger 4
     #
     # deal the files to the type
 
@@ -1203,6 +1215,12 @@ def read_package(
 
         elif f.name.endswith("tsg_tir.bip"):
             setattr(file_pairs, "tir_bip", f)
+
+        elif f.name.endswith("tsg_mir.tsg"):
+            setattr(file_pairs, "mir_tsg", f)
+
+        elif f.name.endswith("tsg_mir.bip"):
+            setattr(file_pairs, "mir_bip", f)
 
         elif f.name.endswith("tsg_mir.tsg"):
             setattr(file_pairs, "mir_tsg", f)
@@ -1260,6 +1278,7 @@ def read_package(
     else:
         cras = Cras
 
+    return TSG(nir, tir, mir, cras, lidar)
     return TSG(nir, tir, mir, cras, lidar)
 
 
