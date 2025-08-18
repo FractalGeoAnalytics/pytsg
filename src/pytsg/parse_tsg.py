@@ -104,8 +104,8 @@ class Spectra:
 @dataclass
 class TSG:
     nir: Spectra
-    tir: Optional[Spectra]
     mir: Optional[Spectra]
+    tir: Optional[Spectra]
     cras: Optional[Cras]
     lidar: Optional[NDArray]
 
@@ -121,8 +121,6 @@ class FilePairs:
     nir_bip: Union[Path, None] = None
     tir_tsg: Union[Path, None] = None
     tir_bip: Union[Path, None] = None
-    mir_tsg: Union[Path, None] = None
-    mir_bip: Union[Path, None] = None
     mir_tsg: Union[Path, None] = None
     mir_bip: Union[Path, None] = None
     lidar: Union[Path, None] = None
@@ -174,14 +172,6 @@ class FilePairs:
 
     def valid_tir(self) -> bool:
         result = self._get_bip_tsg_pair("tir")
-        if result is None:
-            valid = False
-        else:
-            valid = True
-        return valid
-
-    def valid_mir(self) -> bool:
-        result = self._get_bip_tsg_pair("mir")
         if result is None:
             valid = False
         else:
@@ -1196,7 +1186,6 @@ def read_package(
 
     # process here is to map the files that we need together
     # tir and nir files and mir in hylogger 4
-    # tir and nir files and mir in hylogger 4
     #
     # deal the files to the type
 
@@ -1216,12 +1205,7 @@ def read_package(
         elif f.name.endswith("tsg_tir.bip"):
             setattr(file_pairs, "tir_bip", f)
 
-        elif f.name.endswith("tsg_mir.tsg"):
-            setattr(file_pairs, "mir_tsg", f)
-
-        elif f.name.endswith("tsg_mir.bip"):
-            setattr(file_pairs, "mir_bip", f)
-
+      
         elif f.name.endswith("tsg_mir.tsg"):
             setattr(file_pairs, "mir_tsg", f)
 
@@ -1240,8 +1224,8 @@ def read_package(
     # for the nir/swir and then tir
     # read nir/swir
     nir: Spectra
-    tir: Optional[Spectra]
     mir: Optional[Spectra]
+    tir: Optional[Spectra]
     lidar: Optional[NDArray]
     cras: Optional[Cras] = None
 
@@ -1278,9 +1262,8 @@ def read_package(
     else:
         cras = Cras
 
-    return TSG(nir, tir, mir, cras, lidar)
-    return TSG(nir, tir, mir, cras, lidar)
-
+    return TSG(nir,mir,tir, cras, lidar)
+    
 
 if __name__ == "main":
     foldername = "data/RC_hyperspectral_geochem"
