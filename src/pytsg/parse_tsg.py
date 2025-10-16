@@ -10,10 +10,9 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from numpy.core._exceptions import _ArrayMemoryError
 from numpy.typing import NDArray
 from simplejpeg import decode_jpeg, encode_jpeg
-import zarr
+
 from dhcomp.composite import _greedy_composite
 from typing import Optional
 
@@ -256,6 +255,7 @@ def read_cras(
         array_ok: bool = True
         cras: Union[NDArray, zarr.core.Array]  # type: ignore
         if backing_file is not None:
+            import zarr
             # the big file flag decompresses the jpg data into a zarr array
             # with zarr it is important to ensure that you set the chunks appropriately
             # this means that you are aligning the output chunk size to the input chunk size
@@ -277,9 +277,9 @@ def read_cras(
             try:
                 cras = np.zeros((header.nl, header.ns, header.nb), dtype=np.uint8)
                 array_ok = True
-            except _ArrayMemoryError:
+            except numpy.core._exceptions._ArrayMemoryError:
                 print(
-                    "This file is too big to fit inmemory set big_file=True to dump to disk"
+                    "This file is too big to fit in memory set big_file=True to dump to disk"
                 )
                 array_ok = False
                 cras = np.zeros(1, dtype=np.uint8)
@@ -603,7 +603,6 @@ def extract_chips(
 
 def generate_chips(
     filename: Union[str, Path],
-    outfolder: Union[str, Path],
     spectra: Spectra,
     centre_cut: bool = True,
     batch_size: int = 256,
@@ -612,11 +611,6 @@ def generate_chips(
     creates an generator that generates the image tiles the last batch is not guaranteed to be the target size
     avoids having to write to folder, useful for processing files without having to first write to disk.
     """
-    if isinstance(outfolder, str):
-        outfolder = Path(outfolder)
-
-    if not outfolder.exists():
-        outfolder.mkdir()
 
     section_info_format: str = "4f3i"
     tray_info_format: str = "3f2i"
