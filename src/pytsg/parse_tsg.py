@@ -103,8 +103,8 @@ class Spectra:
 @dataclass
 class TSG:
     nir: Spectra
-    mir: Optional[Spectra]
     tir: Optional[Spectra]
+    mir: Optional[Spectra]
     cras: Optional[Cras]
     lidar: Optional[NDArray]
 
@@ -1226,15 +1226,18 @@ def read_package(
     if file_pairs.valid_nir():
         nir = read_tsg_bip_pair(file_pairs.nir_tsg, file_pairs.nir_bip, "nir")
     else:
-        nir = Spectra()
+        nir = Spectra
+
     if file_pairs.valid_tir():
         tir = read_tsg_bip_pair(file_pairs.tir_tsg, file_pairs.tir_bip, "tir")
     else:
         tir = Spectra
+
     if file_pairs.valid_mir():
         mir = read_tsg_bip_pair(file_pairs.mir_tsg, file_pairs.mir_bip, "mir")
     else:
         mir = Spectra
+
     if file_pairs.valid_lidar():
         lidar = read_hires_dat(file_pairs.lidar)
     else:
@@ -1256,7 +1259,7 @@ def read_package(
     else:
         cras = Cras
 
-    return TSG(nir,mir,tir, cras, lidar)
+    return TSG(nir,tir,mir, cras, lidar)
     
 
 if __name__ == "main":
