@@ -21,6 +21,7 @@ class ClassHeaders(NamedTuple):
     name: str
     max: int
     classes: "dict[int, str]"
+    colors: list
 
     def map_ints(self, index: NDArray) -> "list[str]":
         outindex: list[str] = []
@@ -924,7 +925,15 @@ def _parse_class_section(section_list: "list[str]", classnumber: int) -> ClassHe
             split_i = i.split(":")
             class_info.update({int(split_i[0]): split_i[1]})
     max_class: int = int(class_names["max"])
-    class_header = ClassHeaders(classnumber, class_names["name"], max_class, class_info)
+
+    colors_list = []
+
+    if "colours" in list(class_names.keys()):
+        colors_list = [int(s) for s in class_names["colours"].split(" ")]
+
+    class_header = ClassHeaders(
+        classnumber, class_names["name"], max_class, class_info, colors=colors_list
+    )
     return class_header
 
 
